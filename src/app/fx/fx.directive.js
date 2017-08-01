@@ -1,4 +1,3 @@
-import { pasteController } from './paste';
 angular.module('fx')
   .directive('cwhbbbfx', [() => {
     return {
@@ -2064,7 +2063,5 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       }
     }
   }
-
-  pasteController();
 
 }

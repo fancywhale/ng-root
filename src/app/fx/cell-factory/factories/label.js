@@ -1,4 +1,4 @@
-import { bindFontStyle, bindID, bindValue, bindFocus, bindBlur } from './utils';
+import { bindFontStyle, bindID, bindValue, bindFocus, bindBlur, giveFontClass } from './utils';
 
 import {
   UICell,
@@ -29,8 +29,6 @@ import { eleFactory } from '../../../../shared/models/util';
 
 export function createLabel(input) {
   let ele = input.cell.ele.children[0];
-
-  bindFontStyle(input.cell, ele);
-  // ele.innerText = this.cell.value + (this.cell.serial ? this.row.rowIndex : '');
-  // return ele;
+  giveFontClass(input.cell, ele);
+  return ele;
 }

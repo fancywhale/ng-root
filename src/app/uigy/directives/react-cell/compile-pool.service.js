@@ -9,12 +9,17 @@ angular.module('xmcjgy')
     };
 
     var startCompile = function (maxLength) {
-      if (!_compileStarted) {
-        _compileStarted = true;
-        $timeout(function () {
-          _runCompile(maxLength);
-        })
-      }
+      return new Promise((resolve) => {
+        if (!_compileStarted) {
+          _compileStarted = true;
+          $timeout(function () {
+            _runCompile(maxLength).then(() => {
+              resolve();
+            });
+          })
+        }
+      });
+      
     }
 
     var removeTask = function (proc) {
@@ -25,18 +30,24 @@ angular.module('xmcjgy')
     }
     
     var _runCompile = function (maxLength) {
-      if (!_compilePool.length) {
-        _compileStarted = false;
-        return;
-      }
-      var $promises = _compilePool.length > maxLength ? _compilePool.splice(0, maxLength)
-        : _compilePool.splice(0, _compilePool.length);
-                
-      Promise.all($promises.map(function (p) { return p(); })).then(function () {
-        $timeout(function () {
-          _runCompile(maxLength);
-        }, 1);
+      return new Promise((resolve) => {
+        if (!_compilePool.length) {
+          _compileStarted = false;
+          resolve();
+          return;
+        }
+        var $promises = _compilePool.length > maxLength ? _compilePool.splice(0, maxLength)
+          : _compilePool.splice(0, _compilePool.length);
+                  
+        return Promise.all($promises.map(function (p) { return p(); })).then(function () {
+          $timeout(function () {
+            _runCompile(maxLength).then(() => {
+              resolve();
+            });
+          }, 1);
+        });
       });
+      
     };
 
     return {

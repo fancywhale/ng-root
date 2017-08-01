@@ -46,7 +46,7 @@ export class UICell extends events.EventEmitter {
   set rowspan(value) {
     if (this._rowspan === value) return;
     this._rowspan = value;
-    this.emit(CELL_ROWSPAN_CHANGED, value);
+    this._updateSpan();
   }
 
   get colspan() {
@@ -56,7 +56,7 @@ export class UICell extends events.EventEmitter {
   set colspan(value) {
     if (this._colspan === value) return;
     this._colspan = value;
-    this.emit(CELL_COLSPAN_CHANGED, value);
+    this._updateSpan();
   }
 
   get hide() {
@@ -66,7 +66,7 @@ export class UICell extends events.EventEmitter {
   set hide(value) {
     if (this._hide === value) return;
     this._hide = value;
-    this.emit(CELL_HIDE_CHANGED, value);
+    this._hideCell();
   }
 
   get value() {
@@ -128,7 +128,6 @@ export class UICell extends events.EventEmitter {
     super();
     // this._ele = document.createElement('td');
     this._ele = cellEle;
-    this._$ele = $(this._ele);
     this._colIndex = 0;
     this._font = {};
     
@@ -156,10 +155,8 @@ export class UICell extends events.EventEmitter {
     // not firing any event;
     Object.assign(this, obj);
 
-    this._row.on('ROW_INDEX_CHANGE', this._onRowIndexChange.bind(this));
-    this.on(CELL_COLSPAN_CHANGED, this._updateSpan.bind(this));
-    this.on(CELL_ROWSPAN_CHANGED, this._updateSpan.bind(this));
-    this.on(CELL_HIDE_CHANGED, this._hideCell.bind(this));
+    // this._row.on('ROW_INDEX_CHANGE', this._onRowIndexChange.bind(this));
+    // this.on(CELL_HIDE_CHANGED, this._hideCell.bind(this));
 
     this._init();
 
@@ -173,19 +170,24 @@ export class UICell extends events.EventEmitter {
    * gabage collection
    */
   dispose() {
-    this._$ele.off();
-    this._$ele.remove();
+    let $ele = $(this._ele);
+    $ele.off();
+    $ele.remove();
     this.removeAllListeners();
     this._table = null;
     this.row = null;
     this.emit(CELL_DISPOSE, this);
+  }
+
+  updateSpan() {
+    this._updateSpan();
   }
   
   /**
    * update cell id when rowIndex changed;
    * @param {number} index 
    */
-  _onRowIndexChange(index) {
+  onRowIndexChange(index) {
     this._updateID();
   }
 
@@ -200,18 +202,22 @@ export class UICell extends events.EventEmitter {
    * update cell span
    */
   _updateSpan() {
-    this._$ele.attr('rowspan', this._rowspan || 1);
-    this._$ele.attr('colspan', this._colspan || 1);
+    if (this._ele) {
+      this._ele.rowSpan = this._rowspan || 1;
+      this._ele.colSpan = this._colspan || 1;
+    }
   }
 
   /**
    * hide cell
    */
   _hideCell() {
-    if (this._hide) {
-      this._ele.style.display = 'none';
-    } else {
-      this._ele.style.display = 'table-cell';
+    if (this._ele) {
+      if (this._hide) {
+        this._ele.style.display = 'none';
+      } else if (this._hide) {
+        this._ele.style.display = 'table-cell';
+      }
     }
   }
   
@@ -219,7 +225,9 @@ export class UICell extends events.EventEmitter {
    * set align
    */
   _setAlign() {
-    this._$ele.css({ 'text-align': this.align });
+    if (this._ele) {
+      this._ele.style.textAlign = this.align;
+    }
   }
 
   /**
@@ -230,8 +238,10 @@ export class UICell extends events.EventEmitter {
     this._updateSpan();
     this._setAlign();
     this._hideCell();
-    this._$ele.attr('data-type', this.dataType);
-    this._ele.classList.add('react-cell');
+    if (this._ele) {
+      this._ele.setAttribute('data-type', this.dataType);
+      this._ele.classList.add('react-cell');
+    }
   }
 
   

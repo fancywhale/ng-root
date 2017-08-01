@@ -72,10 +72,10 @@ export function _giveID(tab, cell, row, ele, type) {
   ele.id = [type, tab.id, row.rowIndex, cell.colIndex].join('_');
 }
 
-export function _giveFontClass(cell, ele) {
+export function giveFontClass(cell, ele) {
   if (cell.font && cell.font.bold) {
-    $(ele).addClass('font-bold-row')
+    ele.classList.add('font-bold-row');
   } else {
-    $(ele).removeClass('font-bold-row')
+    ele.classList.remove('font-bold-row');
   }
 }

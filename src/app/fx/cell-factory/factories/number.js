@@ -78,7 +78,7 @@ export function createNumber(input) {
       .$apply();
   });
   
-  pasteHook(input.scope, input.tab, input.$dataTable, input.row, input.cell, ele);
+  // pasteHook(input.scope, input.tab, input.$dataTable, input.row, input.cell, ele);
 
   // return ele;
 };

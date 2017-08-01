@@ -1,7 +1,7 @@
 import { UICell, UIRow, UITable } from '../../shared/models';
 
 angular.module('fx')
-  .service('fxService', ['swordHttp', 'FxCellFactoryService', '$timeout', '$filter', function (swordHttp, CellFactoryService, $timeout, $filter) {
+  .service('fxService', ['swordHttp', 'FxCellFactoryService', '$timeout', '$filter', 'CellCompilePoolService', function (swordHttp, CellFactoryService, $timeout, $filter, CellCompilePoolService) {
     
     function setData(uimodule, tab, uidata, scope) {
       var setDataStart = Date.now();
@@ -136,17 +136,23 @@ angular.module('fx')
           console.log('table rendering time: ', new Date().getTime() - startTime);
         });
       }
-      console.log('set date time:', Date.now - setDataStart);
+      console.log('set data time:', Date.now() - setDataStart);
     }
 
     function renderTable(uitab, tbody, scope, uimodule) {
       tbody.rows.forEach((row, rowIndex) => {
         row.cells.forEach((cell, colIndex) => {
-          CellFactoryService.factory(row, cell, uitab, colIndex, rowIndex, uimodule.tabs.indexOf(uitab), scope);
+          let func = () => new Promise((resolve) => {
+            CellFactoryService.factory(row, cell, uitab, colIndex, rowIndex, uimodule.tabs.indexOf(uitab), scope);
+            resolve();
+          });
+          CellCompilePoolService.createTask(func);
         });
       });
-      scope.$emit('ngRepeatFinished');
-      scope.$apply();
+      CellCompilePoolService.startCompile(40).then(() => {
+        scope.$emit('ngRepeatFinished');
+        scope.$apply();
+      });
     }
     
 

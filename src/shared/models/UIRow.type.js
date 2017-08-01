@@ -54,6 +54,9 @@ export class UIRow extends events.EventEmitter {
   set rowIndex(value) {
     this._rowIndex = value;
     this.emit(ROW_INDEX_CHANGE, value);
+    this.cells.forEach(cell => {
+      cell.onRowIndexChange();
+    });
   }
 
   get table() {
@@ -66,7 +69,6 @@ export class UIRow extends events.EventEmitter {
     this._ele = rowEle;
     // this._ele = document.createElement('tr');
     // this._ele.classList.add('react-row');
-    this._$ele = $(this._ele);
     this._rowIndex = '';
     this._cells = [];
     this._del = false;
@@ -75,7 +77,6 @@ export class UIRow extends events.EventEmitter {
     this._data = obj;
     
     this._table = table;
-    this._$table = $(table.ele);
 
     this.setMaxListeners(50);
 
@@ -106,8 +107,9 @@ export class UIRow extends events.EventEmitter {
   }
 
   remove() {
-    this._$ele.off();
-    this._$ele.remove();
+    let $ele = $(this._ele);
+    $ele.off();
+    $ele.remove();
     let index = this._table.rows.indexOf(this);
     this._table.rows.splice(index, 1);
     this._cells.forEach(cell => {
@@ -131,22 +133,26 @@ export class UIRow extends events.EventEmitter {
    * @param {number} index 
    */
   append(index) {
-    var $rows = this._$table.find('tr.react-row');
+    let $table = $(this._table);
+    let $rows = $table.find('tr.react-row');
+    let $ele = $(this._ele);
     if (!$rows.length) {
-      this._$table.prepend(this._ele);
+      $table.prepend(this._ele);
     } else {
       if (index < $rows.length) {
-        this._$ele.insertBefore($rows[index]);
+        $ele.insertBefore($rows[index]);
       } else {
-        this._$ele.insertAfter($rows[$rows.length - 1]);
+        $ele.insertAfter($rows[$rows.length - 1]);
       }
     }
   }
 
   _cellsChanged(cells) {
-    cells.forEach(cell => {
-      this._$ele.append(cell._ele);
-    });
+    if (this._ele) {
+      cells.forEach(cell => {
+        this._ele.appendChild(cell._ele);
+      });
+    }
   }
 
   _beforeCellChanged(oldCells, newCelss) {

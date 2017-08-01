@@ -21,11 +21,14 @@ import * as concatCss from 'gulp-concat-css';
 import * as concat from 'gulp-concat';
 import * as convertEncoding from 'gulp-convert-encoding';
 import * as bom from 'gulp-bom';
+import * as urlAdjuster from 'gulp-css-url-adjuster';
 
-import { projectConfig } from './config';
+
+import { projectConfig, projectRoot } from './config';
 
 const paths = {
-  dist: './dist',
+  projectRoot,
+  dist: `${projectRoot}/webapp/ng-boot`,
   tmp: './tmp',
   src: './src',
 };
@@ -35,12 +38,12 @@ export class Gulpfile {
 
   @SequenceTask('build:dev')
   public buildDev() {
-    return ['cache', ':build:dev:js', 'html', ':sass:dev', ':build:dev:vendor:js', ':build:dev:lib'];
+    return ['cache', ':build:dev:js', 'html', ':sass:dev', ':css', ':build:dev:vendor:js', ':build:dev:lib'];
   }
 
   @SequenceTask('build:prod')
   public buildProd() {
-    return ['cache', ':build:prod:js', 'html', ':sass:prod', ':build:prod:vendor:js' ,':build:prod:lib'];
+    return ['cache', ':build:prod:js', 'html', ':sass:prod',':css', ':build:prod:vendor:js' ,':build:prod:lib'];
   }
 
   @Task(':build:prod:js')
@@ -52,7 +55,7 @@ export class Gulpfile {
       .pipe(buffer())
       .pipe(uglify())
       .pipe(convertEncoding({to: 'utf8'}))
-      .pipe(gulp.dest('./dist'));
+      .pipe(gulp.dest(paths.dist));
   }
   
   @Task(':build:prod:vendor:js')
@@ -63,19 +66,18 @@ export class Gulpfile {
       .pipe(source('vendors.js'))
       .pipe(buffer())
       .pipe(convertEncoding({to: 'utf8'}))      
-      .pipe(gulp.dest('./dist'));
+      .pipe(gulp.dest(paths.dist));
   }
   
   @Task(':build:dev:vendor:js')
   public buildDevVendorsJs() {
-
     return browserify({ entries: './src/vendors.js', debug: false, insertGlobals: false })
       .transform('babelify')
       .bundle()
       .pipe(source('vendors.js'))
       .pipe(buffer())
       .pipe(convertEncoding({to: 'utf8'}))      
-      .pipe(gulp.dest('./dist'));
+      .pipe(gulp.dest(paths.dist));
   }
 
   @Task(':build:dev:js')
@@ -86,7 +88,7 @@ export class Gulpfile {
       .pipe(source('index.js'))
       .pipe(buffer())
       .pipe(convertEncoding({to: 'utf8'}))      
-      .pipe(gulp.dest('./dist'));
+      .pipe(gulp.dest(paths.dist));
   }
   
   @Task(':build:dev:lib')
@@ -133,7 +135,7 @@ export class Gulpfile {
 
   @Task()
   public clean(done) {
-    return del([paths.dist + '/', paths.tmp + '/'], done);
+    return del([paths.dist + '/', paths.tmp + '/'], { force: true });
   }  
   /**
    * Creates a package and publishes it to npm.
@@ -152,9 +154,20 @@ export class Gulpfile {
   public watch() {
   }
 
+  @Task(':css')
+  public css(cb: Function) {
+    return gulp.src(projectConfig.externalCss)
+      .pipe(urlAdjuster({
+        prepend: '/css/css/',
+      }))
+      .pipe(concatCss('global.css'))
+      .pipe(convertEncoding({ to: 'utf8' }))
+      .pipe(gulp.dest(paths.dist));
+  }
+
   @Task(':sass:dev')
   public sassDev(cb: Function) {
-    return gulp.src(paths.src + '/**/*.scss')
+    return gulp.src([paths.src + '/**/*.scss'])
       .pipe(sass().on('error', sass.logError))
       .pipe(importCss())
       .pipe(concatCss('style.css'))

@@ -1,3 +1,4 @@
+import { ScrollService } from './services/scroll.service';
 angular.module('fx')
   .directive('cwhbbbfx', [() => {
     return {
@@ -7,24 +8,6 @@ angular.module('fx')
       controller: ['$timeout', '$scope', 'cwhbbbService', 'swordHttp', 'ngDialog', '$filter', '$sce', '$interval', 'fxService', 'FxCellFactoryService', cwhbbbFxController]
     }
   }]);
-
-function CellData() {
-	this._value = '';
-	this._callbacks = [];
-	Object.defineProperty(this, 'value', {
-		get: function () {
-			return this._value;
-		},
-		set: function (newValue) {
-			this._value = newValue;
-			this._callbacks.forEach(function (cb) {
-				cb(newValue);
-			});
-		},
-		enumerable: true,
-		configurable: true
-	});
-}
 
 
 function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog, $filter, $sce, $interval, fxService, CellFactoryService) {
@@ -245,7 +228,6 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
 	
   //初始化数据
   var initData = function () {
-		
     $scope.loadMsg = "数据加载中...";
     //遍历tab，分别加载各自的table数据
     var count = $scope.uimodule.tabs.length;
@@ -264,56 +246,9 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
     var loadSize = 2;
     var totalSize = cjbgdmArr.length;
     if (totalSize > loadSize) {
-      //函数节流
-      var throttle = function (fun, delay, time) {
-        var timeout, startTime = new Date();
-        return function () {
-          var context = this,
-            args = arguments,
-            curTime = new Date();
-          clearTimeout(timeout);
-          // 如果达到了规定的触发时间间隔，触发 handler
-          if (curTime - startTime >= time) {
-            fun.apply(context, args);
-            startTime = curTime;
-            // 没达到触发间隔，重新设定定时器
-          } else {
-            timeout = setTimeout(fun, delay);
-          }
-        };
-      }
 			
-      var loading = false;
-      var loadIndex = 0;
       var dataMap = new Map();
-      var scrollLoad = function () {
-        var docHeight = 0;
-        var keys = dataMap.keys();
-        $.each(keys, function (index, key) {
-          docHeight = docHeight + $('#' + key).height();
-          loadIndex = index + 1;
-        });
-				 
-        var bgdm = cjbgdmArr[loadIndex];
-        if (!loading) {
-          if ($(window).scrollTop() + $(window).height() + 20 >= docHeight && $(window).scrollTop() > 20) {
-            if ($('#main_table_' + bgdm).find('tbody').children().length <= 0) {
-              if ($('#tbhead_' + bgdm).length > 0) {
-                window.showDomMask($('#tbhead_' + bgdm), 60);
-              }
-              loading = true;
-              //$(window).unbind('scroll');
-              param = { xmid: window.top.xmid, cjbddm: cjbddm, cjbgdms: bgdm };
-              cwhbbbService.loadData(param, loadHBData);
-              $scope.$on('ngRepeatFinished', function (ngRepeatFinishedEvent) {
-                window.hideDomMask();
-                loading = false;
-                //$(window).on('scroll',throttle(scrollLoad,100,500));
-              });
-            }
-          }
-        }
-      }
+      let scrollService = new ScrollService(dataMap, cjbgdmArr);
 			
       var loadHBData = function (uidataList) {
         $.each(uidataList, function (index, uidata) {
@@ -332,26 +267,22 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
           $('.new_function_menu').show();
           return;
         }
-        /*var windowHeight = $(window).height();
-        var top = $('#'+cjbgdmArr[2]).offset().top;
-        var isloaded = false;
-        $scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
-          console.log(ngRepeatFinishedEvent);
-          windowHeight = $(window).height();
-          top = $('#'+cjbgdmArr[2]).offset().top;
-          //console.log(windowHeight + ':' + top);
-          isloaded = true;
-        });
-        if(isloaded){
-          console.log(windowHeight + ':' + top);
-        }*/
       }
 			
       $('.new_function_menu').hide();
-      var param = { xmid: window.top.xmid, cjbddm: cjbddm, cjbgdms: cjbgdmArr.slice(0, 2) };
+      let param = { xmid: window.top.xmid, cjbddm: cjbddm, cjbgdms: cjbgdmArr.slice(0, 2) };
       cwhbbbService.loadData(param, loadHBData);
-			
-      $(window).on('scroll', throttle(scrollLoad, 100, 500));
+
+      $scope.$on('ngRepeatFinished', () => {
+        scrollService.stopLoading();
+      });
+        
+      $(window).on('scroll', $.debounce(() => {
+        if (scrollService.startLoading()) {
+          let param = { xmid: window.top.xmid, cjbddm: cjbddm, cjbgdms: scrollService.bgdm };
+          cwhbbbService.loadData(param, loadHBData);
+        }
+      }, 300));
     }
   }
   initUI();
@@ -367,8 +298,6 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
         }
       }
     });
-		
-    //$scope.times = ['2016-09','2016-10','2016-08'];
   }
   initTimes();
   //判断动态列是否设置过

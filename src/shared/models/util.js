@@ -89,6 +89,7 @@ function createDisable() {
 function createTextarea() {
   return `
     <div react-ele
+      ng-paste-text
       contenteditable="true" paste-text
       style="outline:none;position: relative;z-index: 1;margin: 3px;min-height:16px;white-space:normal;word-break:break-all;word-wrap:break-word; " 
     >${escapeHtml(this.cell.value)}</div>`;

@@ -1,4 +1,4 @@
-import { bindFontStyle, bindID, bindValue, bindFocus } from './utils';
+import { bindFontStyle, bindID, bindValue, bindFocus, bindPaste } from './utils';
 import {
   UICell,
   UIRow,
@@ -78,6 +78,7 @@ export function createNumber(input) {
       .$apply();
   });
   
+  bindPaste(input, ele);
   // pasteHook(input.scope, input.tab, input.$dataTable, input.row, input.cell, ele);
 
   // return ele;

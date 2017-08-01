@@ -1,4 +1,4 @@
-import { bindFontStyle, bindID, bindFocus, bindBlur, bindValue } from './utils';
+import { bindFontStyle, bindID, bindFocus, bindBlur, bindValue, bindPaste } from './utils';
 import { eleFactory } from '../../../../shared/models/util';
 
 import {
@@ -32,12 +32,12 @@ export function createTextarea(input) {
   let ele = input.cell.ele.children[0];
 
   bindID(input.tab, input.cell, input.row, ele, 'textarea');
-  pasteHook(input.scope, input.tab, input.$dataTable, input.row, input.cell, ele);
   contentEditable(ele, (text) => {
     input.cell.setValue(text);
   });
   input.cell.on(CELL_VALUE_CHANGED, () => {
     ele.innerText = input.cell.value;
   });
+  bindPaste(input, ele);
   return ele;
 }

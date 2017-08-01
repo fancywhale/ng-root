@@ -1,3 +1,5 @@
+import { pasteHook } from '../../../../shared/hooks/paste';
+
 import {
   UICell,
   UIRow,
@@ -78,4 +80,12 @@ export function giveFontClass(cell, ele) {
   } else {
     ele.classList.remove('font-bold-row');
   }
+}
+
+export function bindPaste(input, ele) {
+  ele.addEventListener('mouseenter', () => {
+    if (ele.getAttribute('paste-text') === 'true') return;
+    pasteHook(input.scope, input.tab, input.$dataTable, input.row, input.cell, ele);
+    ele.setAttribute('paste-text', 'true');
+  });
 }

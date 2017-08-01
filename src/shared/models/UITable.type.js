@@ -63,6 +63,8 @@ export class UITable extends events.EventEmitter {
       throw new Error('table rows should be instance of array.')
     }
 
+    var startTime = Date.now();
+    
     let rows = data.rows.map((row) => {
       let cells = row.cells.map(cell => {
         let payload = {
@@ -79,6 +81,7 @@ export class UITable extends events.EventEmitter {
           ${cells.join('')}
         </tr>`;
     }).join('');
+    console.log('table scripting time:', Date.now() - startTime);
     
     var startTime = Date.now();
     let tableEle = $(`<tbody>${rows}</tbody>`)[0];

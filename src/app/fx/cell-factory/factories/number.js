@@ -29,16 +29,16 @@ import { pasteHook } from '../../../../shared/hooks/paste';
 
 export function createNumber(input) {
 
-  // function getNumber(value, decimal) {
-  //   if (typeof value === 'string') {
-  //     return value;
-  //   } else {
-  //     value = value || 0;
-  //     return value.toFixed(decimal);
-  //   }
-  // }
+  function getNumber(value, decimal) {
+    if (typeof value === 'string') {
+      return value;
+    } else {
+      value = value || 0;
+      return value.toFixed(decimal);
+    }
+  }
 
-  // // input.cell.value = getNumber(input.cell.value, input.cell.decimal);
+  input.cell.value = getNumber(input.cell.value, input.cell.decimal);
   // input
   //   .scope
   //   .numberCellChange(input.tab, input.cell.colIndex);

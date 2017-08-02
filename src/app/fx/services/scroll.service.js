@@ -7,22 +7,20 @@ export class ScrollService {
     this._eles = {};
     this._loadIndex = 0;
     this.bgdm = '';
+    this.container = $('body')[0];
+    this.doc = document.documentElement;
   }
 
   startLoading() {
     if (this.loading) return false;
     if (!this._isScrollBottom()) return false;
     if (this._hasLoaded()) return false;
-    let tbhead = this._eles['tbhead_' + this.bgdm] || document.getElementById('tbhead_' + this.bgdm);
-    if (tbhead) {
-      window.showDomMask($(tbhead), 60);
-    }
     this.loading = true;
     return true;
   }
 
   stopLoading() {
-    window.hideDomMask();
+    // window.hideDomMask();
     this.loading = false;
   }
 
@@ -30,12 +28,14 @@ export class ScrollService {
     let docHeight = 0;
     let keys = this._dataMap.keys();
     keys.forEach((key, index) => {
-      var _tab = this._eles[key] || document.getElementById('key');
+      var _tab = this._eles[key] || document.getElementById(key);
       if (!_tab) { return };
       docHeight += _tab.getBoundingClientRect().height;
       this._eles[key] = _tab;
     });
-    return (window.scrollY + window.innerHeight + 20 >= docHeight && window.scrollY > 20);
+    return (this.container.scrollTop + window.innerHeight + 20 >= docHeight
+      && this.container.scrollTop > 20) || (this.doc.scrollTop + window.innerHeight + 20 >= docHeight
+        && this.doc.scrollTop > 20);
   }
 
   _hasLoaded() {

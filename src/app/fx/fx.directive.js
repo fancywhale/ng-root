@@ -21,10 +21,11 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
   $scope.xmid = window.top.xmid;
   $scope.cjbddm = cjbddm;
   $scope.checkedMSG = new Array();
+  $scope.loading = 0;
+  
   //初始化UI
   var initUI = function () {
     $scope.loadMsg = "界面初始化...";
-    $scope.loading++;
     cwhbbbService.initUI({ xmid: window.top.xmid, cjbddm: cjbddm }, function (uimodule) {
       $scope.uimodule = uimodule;
       if (uimodule.scripts && uimodule.scripts.length > 0) {
@@ -236,7 +237,6 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
     var cjbgdms = "";
     var tabMap = new Map();
     angular.forEach($scope.uimodule.tabs, function (tab) {
-      $scope.loading++;
       cjbgdms = cjbgdms + tab.id + ",";
       tabMap.put(tab.id, tab);
     });
@@ -251,6 +251,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       let scrollService = new ScrollService(dataMap, cjbgdmArr);
 			
       var loadHBData = function (uidataList) {
+        $scope.loading--;
         $.each(uidataList, function (index, uidata) {
           var tabId = uidata.id;
           dataMap.put(tabId, uidata);
@@ -271,6 +272,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
 			
       $('.new_function_menu').hide();
       let param = { xmid: window.top.xmid, cjbddm: cjbddm, cjbgdms: cjbgdmArr.slice(0, 2) };
+      $scope.loading++;
       cwhbbbService.loadData(param, loadHBData);
 
       $scope.$on('ngRepeatFinished', () => {
@@ -278,9 +280,12 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       });
         
       $(window).on('scroll', $.debounce(() => {
+        console.log('scrolling', Date.now());
         if (scrollService.startLoading()) {
           let param = { xmid: window.top.xmid, cjbddm: cjbddm, cjbgdms: scrollService.bgdm };
           cwhbbbService.loadData(param, loadHBData);
+          $scope.loading++;
+          $scope.$apply();
         }
       }, 300));
     }

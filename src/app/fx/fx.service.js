@@ -150,6 +150,13 @@ angular.module('fx')
         });
       });
       CellCompilePoolService.startCompile(40).then(() => {
+        tbody.rows.forEach((row, rowIndex) => {
+          row.cells.forEach((cell, colIndex) => {
+            scope.numberCellChange(uitab, cell.colIndex);
+            scope.numberInit(cell);
+          });
+        });
+        
         scope.$emit('ngRepeatFinished');
         scope.$apply();
       });

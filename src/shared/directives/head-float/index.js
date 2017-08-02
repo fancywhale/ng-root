@@ -6,106 +6,141 @@ angular.module('app.shared')
       require: '?ngModel',
       restrict: 'A',
       link: function ($scope, element, attrs, ngModel) {
-        var clonePanel = null;
-        var clonePanelHead = null;
-        var freezeColumnNum = 2;
-        var freezeWidth = null;
-        var tabId = attrs.ngHeadFloat;
-        $(element).scroll(function () {
-          var sl = Math.max($(element).scrollLeft(), document.documentElement.scrollLeft);
-          $('#table_float_table_head_copy_' + tabId).css('left', -sl + $(element).offset().left + 'px');
+        let clonePanel = null;
+        let clonePanelHead = null;
+        let freezeColumnNum = 2;
+        let freezeWidth = null;
+        let tabId = attrs.ngHeadFloat;
+        let floatBarTop = null;
+        let orgHeader = null;
+        let panel = null;
+        let domBody = $('body')[0];
+        let tabHead = null;
+        let table = null;
+        let panelHead = null;
+        let headerTitle = null;
+        let scroll_header_title = null;
+        let scroll_header = null;
+        let scroll_fix_header = null;
+        let columnsWidth = 0;
+        let floatTableHead = null;
+
+        $(window).on('resize', () => {
+          getColWidth(true);
+          updateView();
+          updateElementView();          
+        })
+        
+        element.scroll(function () {
+          var sl = Math.max(element[0].scrollLeft, document.documentElement.scrollLeft);
+          scroll_header
+            && scroll_header.length
+            && (scroll_header[0].style.left = -sl + element.offset().left + 'px');
+          table = table || $("#main_table_" + tabId);
 				
           if (!clonePanel) {
-            var panel = $('#main_table_panel_body_' + tabId);
-            var columnsWidth = 0;
-            var columnsNumber = 0;
-            $("#main_table_" + tabId).find("td:lt(2), th:lt(2)").each(
-              function () {
-                if (columnsNumber++ >= 2) return;
-                columnsWidth += $(this).outerWidth(true);
-              });
-            columnsWidth += 2;//显示边线
-					
-            clonePanel = panel.clone().attr('id', 'main_table_panel_body_copy_' + tabId);
+            var panelBody = $('#main_table_panel_body_' + tabId);
+            clonePanel = panelBody.clone().attr('id', 'main_table_panel_body_copy_' + tabId);
             clonePanel.find('.float_scroll_bar').remove();
-            clonePanel.css({ 'position': 'absolute', 'width': columnsWidth, 'background-color': '#ffffff', 'top': panel.position().top });
+            clonePanel.css({ 'position': 'absolute', 'width': getColWidth(), 'background-color': '#ffffff', 'top': panelBody.position().top });
             clonePanel.find('input')
               .attr('disabled', 'disabled')
               .attr('tabindex', -1);
             
-            panel.after(clonePanel);
-          }
-          if (!clonePanelHead) {
             var panelHead = $('#table_float_table_head_div_' + tabId);
-            var columnsWidth = 0;
-            var columnsNumber = 0;
-            $("#main_table_" + tabId).find("td:lt(2), th:lt(2)").each(
-              function () {
-                if (columnsNumber++ >= 2) return;
-                columnsWidth += $(this).outerWidth(true);
-              });
-            columnsWidth += 2;//显示边线
 					
             clonePanelHead = panelHead.clone().attr('id', 'table_float_table_head_div_copy_fix_' + tabId);//更改复制的表格id
-            clonePanelHead.css({ 'position': 'absolute', 'width': columnsWidth, 'background-color': '#ffffff', 'top': panelHead.position().top, 'overflow': 'hidden' });
+            clonePanelHead.css({ 'position': 'absolute', 'width': getColWidth(), 'background-color': '#ffffff', 'top': panelHead.position().top, 'overflow': 'hidden' });
             panelHead.after(clonePanelHead);
+            panelBody.after(clonePanel);
+            updateElementView();
           }
         });
-			
-        var $element = $(element);
-        var scroll_header = null;
-        var scroll_header_title = null; //表头上方标题行
-        var scroll_fix_header = null;
-        $(window).scroll(function () {
-          var floatBarTop = $("#float_bar_top");
-          var floatTopHeight = floatBarTop.height();
-          var orgHeaderWidth = $('#table_float_table_head_div_' + tabId).width();
-          var panel = $('#main_table_panel_' + tabId);
-          var panelHeight = panel.height();
-          var scroll_top = $('body').scrollTop() - $element.offset().top + floatTopHeight + $('#tbhead_' + tabId).height();//判断是否到达窗口顶部
-          if (scroll_top > 0 && scroll_top < panelHeight) {
-            if (scroll_header) return;
-            if (scroll_header_title) return;
-            var panelHead = $('#table_float_table_head_div_' + tabId);
-            var columnsWidth = 0;
-            var columnsNumber = 0;
-            var table = $('#main_table_' + tabId);
-            table.find("td:lt(" + freezeColumnNum + "), th:lt(" + freezeColumnNum + ")").each(
-              function () {
-                if (columnsNumber++ >= 2) return;
-                columnsWidth += $(this).outerWidth(true);
-              });
-            columnsWidth += 2;//显示边线
-            var headerTitle = $('#tbhead_' + tabId);
-            scroll_header_title = headerTitle.clone().removeAttr('id');
-            scroll_header_title.css({ 'position': 'fixed', 'top': floatTopHeight, 'width': orgHeaderWidth, 'z-index': 1 });
 
-            var header = $('#table_float_table_head_' + tabId);
-            scroll_header = header.clone().attr('id', 'table_float_table_head_copy_' + tabId);//更改复制的表格id
-            scroll_header.css({ 'position': 'fixed', 'top': floatTopHeight + headerTitle.height(), 'width': orgHeaderWidth, 'border-bottom': '1px solid #efefef' });
-	            	
-            scroll_fix_header = $('<div></div>').css({ 'position': 'fixed', 'top': floatTopHeight + headerTitle.height(), 'width': columnsWidth, 'overflow': 'hidden', 'z-index': 1 });
-            scroll_fix_header.append(header.clone().removeAttr('id').css({ 'width': header.width() }));
-            var sl = Math.max($(element).scrollLeft(), $(document).scrollLeft());
-            scroll_header.css('left', -sl + $(element).offset().left + 'px');
-            $element.after(scroll_header_title);
-            $element.after(scroll_header);
-            $element.after(scroll_fix_header);
+        $(window).scroll(function () {
+          floatBarTop = floatBarTop || $("#float_bar_top");
+          orgHeader = orgHeader || $('#table_float_table_head_div_' + tabId);
+          panel = panel || $('#main_table_panel_' + tabId);
+          tabHead = tabHead || $('#tbhead_' + tabId);
+          table = table || $('#main_table_' + tabId);
+          panelHead = panelHead || $('#table_float_table_head_div_' + tabId);
+          headerTitle = headerTitle || $('#tbhead_' + tabId);
+          
+          
+          var panelHeight = panel.height();
+          var floatTopHeight = floatBarTop.height();
+          var scroll_top = domBody.scrollTop - element.offset().top + floatTopHeight + tabHead.height();//判断是否到达窗口顶部
+          if (scroll_top > 0 && scroll_top < panelHeight) {
+            if (scroll_header_title && scroll_header_title._isVisiable) return;
+
+            if (!scroll_header_title) {
+              scroll_header_title = headerTitle.clone().removeAttr('id');
+              
+              floatTableHead = $('#table_float_table_head_' + tabId);
+              scroll_header = floatTableHead.clone().attr('id', 'table_float_table_head_copy_' + tabId);//更改复制的表格id
+              scroll_fix_header = scroll_fix_header || $('<div></div>');
+              scroll_fix_header.append(floatTableHead.clone().removeAttr('id').css({ 'width': floatTableHead.width() }));
+              
+              element.after(scroll_header_title);
+              element.after(scroll_header);
+              element.after(scroll_fix_header);
+            } else {
+              scroll_header_title.show();
+              scroll_header_title._isVisiable = true;
+
+              scroll_header.show();
+              scroll_header._isVisiable = true;
+
+              scroll_fix_header.show();
+              scroll_fix_header._isVisiable = true;
+            }
+
+            updateView();
           } else {
             if (scroll_header_title) {
-              scroll_header_title.remove();
-              scroll_header_title = null;
+              scroll_header_title.hide();
+              scroll_header_title._isVisiable = false;
             }
             if (scroll_header) {
-              scroll_header.remove();
-              scroll_header = null;
+              scroll_header.hide();
+              scroll_header._isVisiable = false;
             }
             if (scroll_fix_header) {
-              scroll_fix_header.remove();
-              scroll_fix_header = null;
+              scroll_fix_header.hide();
+              scroll_fix_header._isVisiable = false;
             }
           }
         });
+
+        function updateView() {
+          if (!scroll_header_title) return;
+          var orgHeaderWidth = orgHeader.width();
+          var floatTopHeight = floatBarTop.height();
+          scroll_header_title.css({ 'position': 'fixed', 'top': floatTopHeight, 'width': orgHeaderWidth, 'z-index': 1 });
+          scroll_header.css({ 'position': 'fixed', 'top': floatTopHeight + headerTitle.height(), 'width': orgHeaderWidth, 'border-bottom': '1px solid #efefef' });
+          scroll_fix_header.css({ 'position': 'fixed', 'top': floatTopHeight + headerTitle.height(), 'width': getColWidth(), 'overflow': 'hidden', 'z-index': 1 });
+          var sl = Math.max(element.scrollLeft(), $(document).scrollLeft());
+          scroll_header.css('left', -sl + $(element).offset().left + 'px');
+        }
+
+        function updateElementView() {
+          if (!clonePanel) return;
+          clonePanel.css({ 'width': getColWidth() });
+          clonePanelHead.css({ 'width': getColWidth() });
+        }
+
+        function getColWidth(flag) {
+          if (columnsWidth > 0 && !flag) return columnsWidth;
+          var columnsNumber = 0;
+          table
+            .find("td:lt(" + freezeColumnNum + "), th:lt(" + freezeColumnNum + ")")
+            .each((index, ele) => {
+              if (columnsNumber++ >= 2) return;
+              columnsWidth += $(ele).outerWidth(true);
+            });
+          columnsWidth += 2;//显示边线
+          return columnsWidth;
+        }
       }
     }
   }]);

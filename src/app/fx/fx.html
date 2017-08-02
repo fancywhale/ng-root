@@ -13,7 +13,7 @@
 
   <!-- 快捷键保存时，用于获得焦点 -->
   <input id="hidden_focus_hotKey" type="text" style="height:0px;size:0px" />
-  <function-menu></function-menu>
+  <function-menu ng-if="!((uibutton.action=='ztpj'||uibutton.action=='xmjzfx')&&isIe())"></function-menu>
   <!-- <span id="prompt" style="color:#2e8965;float: left;max-width: 600px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;line-height: 31px;margin-left: 10px;font-size: 1.17em;">
 		{{uimodule.defaultPrompt}}
 	</span> -->

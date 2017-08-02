@@ -265,7 +265,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
             }
           }
         });
-        if (loadIndex == cjbgdmArr.length - 2) {
+        if (scrollService.loadIndex == cjbgdmArr.length - 2) {
           validetebgjjy($scope.uimodule.tabs);
           $('.new_function_menu').show();
           return;

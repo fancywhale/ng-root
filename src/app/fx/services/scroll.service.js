@@ -1,5 +1,9 @@
 export class ScrollService {
 
+  get loadIndex() {
+    return this._loadIndex;
+  }
+  
   constructor(dataMap, cjbgdmArr) {
     this._dataMap = dataMap;
     this._cjbgdmArr = cjbgdmArr;

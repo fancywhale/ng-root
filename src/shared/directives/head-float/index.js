@@ -5,9 +5,14 @@ angular.module('app.shared')
     return {
       restrict: 'A',
       link: function ($scope, element, attrs) {
+        let freezeColumnNum = 2; // freeze cols, subject to move to attribute
+        let columnsWidth = 0; // col width of freeze columns
+
+        /**
+         * below is a bunch of dom element cache that would be read frequently
+         */
         let clonePanel = null;
         let clonePanelHead = null;
-        let freezeColumnNum = 2;
         let freezeWidth = null;
         let tabId = attrs.ngHeadFloat;
         let floatBarTop = null;
@@ -21,15 +26,21 @@ angular.module('app.shared')
         let scroll_header_title = null;
         let scroll_header = null;
         let scroll_fix_header = null;
-        let columnsWidth = 0;
         let floatTableHead = null;
 
+        /**
+         * update size when resize
+         */
         $(window).on('resize', () => {
           getColWidth(true);
           updateView();
           updateElementView();
         });
 
+
+        /**
+         * to init styles
+         */
         $timeout(() => {
           floatBarTop = floatBarTop || $("#float_bar_top");
           orgHeader = orgHeader || $('#table_float_table_head_div_' + tabId);
@@ -40,9 +51,15 @@ angular.module('app.shared')
           table = table || $("#main_table_" + tabId);
         }, 1000);
         
+        /**
+         * bind events
+         */
         element.scroll(onElementScroll);
         $(window).scroll(onWindowScroll);
 
+        /**
+         * horizontal scroll
+         */
         function onElementScroll() {
           var sl = Math.max(element[0].scrollLeft, document.documentElement.scrollLeft);
           scroll_header
@@ -70,6 +87,9 @@ angular.module('app.shared')
           }
         }
 
+        /**
+         * vertical scroll
+         */
         function onWindowScroll() {
           floatBarTop = floatBarTop || $("#float_bar_top");
           orgHeader = orgHeader || $('#table_float_table_head_div_' + tabId);
@@ -86,6 +106,9 @@ angular.module('app.shared')
           if (scroll_top > 0 && scroll_top < panelHeight) {
             if (scroll_header_title && scroll_header_title._isVisiable) return;
 
+            /**
+             * create everything when there is nothing.
+             */
             if (!scroll_header_title) {
               scroll_header_title = $($templateCache.get('app/fx/components/tab-head/tab-head.html'))
                 .removeAttr('id')
@@ -104,6 +127,9 @@ angular.module('app.shared')
               element.after(scroll_fix_header);
               $scope.$apply();
             } else {
+              /**
+               * update visible state
+               */
               scroll_header_title.show();
               scroll_header_title._isVisiable = true;
 
@@ -114,8 +140,14 @@ angular.module('app.shared')
               scroll_fix_header._isVisiable = true;
             }
 
+            /**
+             * update styles anyway
+             */
             updateView();
           } else {
+             /**
+             * update visible state
+             */
             if (scroll_header_title) {
               scroll_header_title.hide();
               scroll_header_title._isVisiable = false;
@@ -142,12 +174,19 @@ angular.module('app.shared')
           scroll_header.css('left', -sl + $(element).offset().left + 'px');
         }
 
+        /**
+         * update styles
+         */
         function updateElementView() {
           if (!clonePanel) return;
           clonePanel.css({ 'width': getColWidth() });
           clonePanelHead.css({ 'width': getColWidth() });
         }
 
+        /**
+         * update colWith or just return it.
+         * @param {boolean} flag update flag
+         */
         function getColWidth(flag) {
           if (!table) return;
           if (columnsWidth > 0 && !flag) return columnsWidth;
@@ -163,6 +202,42 @@ angular.module('app.shared')
           console.log(columnsWidth);
           return columnsWidth;
         }
+
+        $scope.$on('$destroy', () => {
+          
+
+          element.unbind(onElementScroll);
+          window.unbind(onWindowScroll);
+
+          clonePanel || clonePanel.remove();
+          clonePanelHead || clonePanelHead.remove();
+          orgHeader || orgHeader.remove();
+          panel || panel.remove();
+          headerTitle || headerTitle.remove();
+          scroll_header_title || scroll_header_title.remove();
+          scroll_header || scroll_header.remove();
+          scroll_fix_header || scroll_fix_header.remove();
+          floatTableHead || floatTableHead.remove();
+
+          freezeColumnNum = null;
+          columnsWidth = null;
+          clonePanel = null;
+          clonePanelHead = null;
+          freezeWidth = null;
+          tabId = null;
+          floatBarTop = null;
+          orgHeader = null;
+          panel = null;
+          domBody = null;
+          tabHead = null;
+          table = null;
+          panelHead = null;
+          headerTitle = null;
+          scroll_header_title = null;
+          scroll_header = null;
+          scroll_fix_header = null;
+          floatTableHead = null;
+        });
       }
     }
   }]);

@@ -102,29 +102,6 @@
   .font-bold-row{
     font-weight: bold;
   }
-  .ng-select-options{
-    display: none;
-    list-style: none;
-    margin: 0 0 0 -5px;
-      padding: 0;
-      position: absolute;
-      background-color: white;
-      z-index: 3;
-      border-left: 1px solid #dddddd;
-      border-right: 1px solid #dddddd;
-      border-bottom: 1px solid #dddddd;
-      max-height: 200px;
-      overflow-y: auto;
-  }
-  .ng-select-options>li{
-    margin: 0;
-    padding: 5px;
-    cursor: pointer;
-    /* border-top: 1px solid #dddddd; */
-  }
-  .ng-select-options>li:HOVER{
-    background-color: #dddddd;
-  }
   .calculate-panel{
     position: absolute;
       background-color: white;

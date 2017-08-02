@@ -282,7 +282,6 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       });
         
       $(window).on('scroll', $.debounce(() => {
-        console.log('scrolling', Date.now());
         if (scrollService.startLoading()) {
           let param = { xmid: window.top.xmid, cjbddm: cjbddm, cjbgdms: scrollService.bgdm };
           cwhbbbService.loadData(param, loadHBData);
@@ -850,7 +849,6 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
                     });
                     tab.subTable.tbody.rows.push(row);
                     window.changeflag = true;
-                    changflag = true;
                   }
                 }
               });

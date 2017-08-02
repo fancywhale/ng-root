@@ -1,5 +1,5 @@
 import * as events from 'events';
-import { UIRow, ROW_REMOVED } from './UIRow.type';
+import { UIRow, ROW_REMOVED, ROW_DEL_CHANGE } from './UIRow.type';
 
 export const ADD_ROW_EVENT = 'ADD_ROW_EVENT';
 export const BEFORE_ROWS_CHANGED = 'BEFORE_ROWS_CHANGED';
@@ -105,16 +105,17 @@ export class UITable extends events.EventEmitter {
     this._$ele = $(this._ele);
     
     data.rows.forEach((rowData, index) => {
-      this._rows.push(new UIRow(rowData, this, tableEle.rows[index]));
+      let row = new UIRow(rowData, this, tableEle.rows[index]);
+      this._rows.push(row);
+      this._initRow(row);
     });
   }
 
-  addRow(rowData) {
+  addRow(rowData, position = this._rows.length) {
     let row = this._newRow(rowData);
-    this._addRow(row, this._rows.length);
+    this._addRow(row, position);
     // raise row add event;
     this.emit(ADD_ROW_EVENT, row);
-
     return row;
   }
 
@@ -130,7 +131,10 @@ export class UITable extends events.EventEmitter {
     this._$ele.insertAfter($(ele).find('thead'));
   }
 
-
+  _initRow(row) {
+    row.on(ROW_DEL_CHANGE, this._regroupCells.bind(this));
+    row.on(ROW_REMOVED, this._regroupCells.bind(this));
+  }
 
   /**
    * create new row and append to table
@@ -144,12 +148,45 @@ export class UITable extends events.EventEmitter {
         this._rows[i].rowIndex = i;
       };
     });
+    this._initRow(row);
 
     // postbuild cells
     row.cells.forEach(cell => {
       cell.postBuild();
     });
     row.append(index);
+  }
+
+  _regroupCells() {
+    let rows = this._rows;
+    rows.forEach((row, rowIndex) => {
+      if (row.del || row.hide) return;
+      row.cells.forEach((cell, colIndex) => {
+        let value = cell.value;
+        if (cell.group) {
+          cell.hide = false;
+          cell.rowspan = 1;
+        }
+        if (!cell.hide && cell.group && rowIndex != 0) {
+          var cellGroup = (step) => {
+            if ((rowIndex - step) < 0) {
+              return;
+            }
+            if (value === rows[rowIndex - step].cells[colIndex].value) {
+              if (rows[rowIndex - step].cells[colIndex].hide
+                || rows[rowIndex - step].del == true
+                || rows[rowIndex - step].hide == true) {
+                cellGroup(step + 1);
+              } else {
+                rows[rowIndex - step].cells[colIndex].rowspan++;
+                cell.hide = true;
+              }
+            }
+          };
+          cellGroup(1);
+        }
+      });
+    });
   }
 
   _newRow(rowData, ele = this._factoryRowEle(rowData)) {

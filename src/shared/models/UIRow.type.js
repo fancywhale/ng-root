@@ -9,6 +9,8 @@ export const ROW_REMOVED = 'ROW_REMOVED';
 export const ROW_CELLS_CHANGED = 'ROW_CELLS_CHANGED';
 export const ROW_BEFORE_CELLS_CHANGED = 'ROW_BEFORE_CELLS_CHANGED';
 export const ROW_CHECKED = 'ROW_CHECKED';
+export const ROW_HIDE_CHANGED = 'ROW_HIDE_CHANGED';
+export const ROW_DISPOSE = 'ROW_DISPOSE';
 
 
 export class UIRow extends events.EventEmitter {
@@ -31,8 +33,20 @@ export class UIRow extends events.EventEmitter {
   }
 
   set del(value) {
+    if (this._del === value) return;
     this._del = value;
+    this._toggleHide();
     this.emit(ROW_DEL_CHANGE, value);
+  }
+
+  get hide() {
+    return this._hide;
+  }
+
+  set hide(value) {
+    if (this._hide === value) return;
+    this._hide = value;
+    this._toggleHide();
   }
 
   set checked(value) {
@@ -75,6 +89,7 @@ export class UIRow extends events.EventEmitter {
     this._$track = '';
     this._checked = false;
     this._data = obj;
+    this._hide = false;
     
     this._table = table;
 
@@ -107,9 +122,6 @@ export class UIRow extends events.EventEmitter {
   }
 
   remove() {
-    let $ele = $(this._ele);
-    $ele.off();
-    $ele.remove();
     let index = this._table.rows.indexOf(this);
     this._table.rows.splice(index, 1);
     this._cells.forEach(cell => {
@@ -117,7 +129,7 @@ export class UIRow extends events.EventEmitter {
     });
     // raise del event;
     this.emit(ROW_REMOVED, this, index);
-    this.removeAllListeners();
+    this.dispose();
   }
 
   addCell(cellData) {
@@ -134,7 +146,7 @@ export class UIRow extends events.EventEmitter {
    */
   append(index) {
     let $table = $(this._table.ele);
-    let $rows = $table.find('tr.react-row');
+    let $rows = $table.find('tr[react-row]');
     let $ele = $(this._ele);
     if (!$rows.length) {
       $table.prepend(this._ele);
@@ -145,6 +157,25 @@ export class UIRow extends events.EventEmitter {
         $ele.insertAfter($rows[$rows.length - 1]);
       }
     }
+  }
+
+  dispose() {
+    this.removeAllListeners();
+    $(this._ele).remove();
+    $(this._ele).find('*').off();
+    this.emit(ROW_DISPOSE);
+  }
+
+  _toggleHide() {
+    if (this._ele) {
+      if (this._del || this._hide) {
+        this._ele.style.display = 'none';
+      } else {
+        this._ele.style.display = 'table-row';
+      }
+    }
+    
+    this.emit(ROW_HIDE_CHANGED, this._del || this._hide);
   }
 
   _cellsChanged(cells) {

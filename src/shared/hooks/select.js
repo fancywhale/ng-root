@@ -57,7 +57,7 @@ export function selectHook($scope, element, cell) {
       $scope.$apply();
     });
   }
-  angular.forEach(cell.options, function (option) {
+  cell.options.forEach(option => {
     var name = option.name;
     var value = option.value;
     if (cell.value == value) {
@@ -70,5 +70,6 @@ export function selectHook($scope, element, cell) {
     });
     ul.append(li);
   });
-  $(element).after(ul);
+  ul.appendTo('body')
+  // $(element).after(ul);
 }

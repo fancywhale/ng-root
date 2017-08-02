@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('app.shared')
-  .directive('ngHeadFloat', ['$timeout', '$parse', '$compile', ($timeout, $parse, $compile) => {
+  .directive('ngHeadFloat', ['$timeout', '$parse', '$compile', '$templateCache', ($timeout, $parse, $compile, $templateCache) => {
     return {
       restrict: 'A',
       link: function ($scope, element, attrs) {
@@ -47,6 +47,7 @@ angular.module('app.shared')
           var sl = Math.max(element[0].scrollLeft, document.documentElement.scrollLeft);
           scroll_header
             && scroll_header.length
+            // && (scroll_header[0].style.left = element[0].getClientRects()[0].left + 'px');
             && (scroll_header[0].style.left = -sl + element.offset().left + 'px');
           table = table || $("#main_table_" + tabId);
 				
@@ -86,7 +87,9 @@ angular.module('app.shared')
             if (scroll_header_title && scroll_header_title._isVisiable) return;
 
             if (!scroll_header_title) {
-              scroll_header_title = headerTitle.clone().removeAttr('id');
+              scroll_header_title = $($templateCache.get('app/fx/components/tab-head/tab-head.html'))
+                .removeAttr('id')
+                .removeAttr('ng-if');
               
               floatTableHead = $('#table_float_table_head_' + tabId);
               scroll_header = floatTableHead.clone().attr('id', 'table_float_table_head_copy_' + tabId);//更改复制的表格id
@@ -94,12 +97,12 @@ angular.module('app.shared')
               scroll_fix_header = scroll_fix_header || $('<div></div>');
               scroll_fix_header.append(floatTableHead.clone().removeAttr('id').css({ 'width': floatTableHead.width() }));
               
-              scroll_header_title[0].removeAttribute('ng-if');
               $compile(scroll_header_title)($scope);
               
               element.after(scroll_header_title);
               element.after(scroll_header);
               element.after(scroll_fix_header);
+              $scope.$apply();
             } else {
               scroll_header_title.show();
               scroll_header_title._isVisiable = true;
@@ -132,9 +135,9 @@ angular.module('app.shared')
           if (!scroll_header_title) return;
           var orgHeaderWidth = orgHeader.width();
           var floatTopHeight = floatBarTop.height();
-          scroll_header_title.css({ 'position': 'fixed', 'top': floatTopHeight, 'width': orgHeaderWidth, 'z-index': 1 });
+          scroll_header_title.css({ 'position': 'fixed', 'top': floatTopHeight, 'width': orgHeaderWidth, 'z-index': 3 });
           scroll_header.css({ 'position': 'fixed', 'top': floatTopHeight + headerTitle.height(), 'width': orgHeaderWidth, 'border-bottom': '1px solid #efefef' });
-          scroll_fix_header.css({ 'position': 'fixed', 'top': floatTopHeight + headerTitle.height(), 'width': getColWidth(), 'overflow': 'hidden', 'z-index': 1 });
+          scroll_fix_header.css({ 'position': 'fixed', 'top': floatTopHeight + headerTitle.height(), 'width': getColWidth(), 'overflow': 'hidden', 'z-index': 3 });
           var sl = Math.max(element.scrollLeft(), $(document).scrollLeft());
           scroll_header.css('left', -sl + $(element).offset().left + 'px');
         }
@@ -148,6 +151,7 @@ angular.module('app.shared')
         function getColWidth(flag) {
           if (!table) return;
           if (columnsWidth > 0 && !flag) return columnsWidth;
+          columnsWidth = 0;
           var columnsNumber = 0;
           table
             .find("td:lt(" + freezeColumnNum + "), th:lt(" + freezeColumnNum + ")")
@@ -156,6 +160,7 @@ angular.module('app.shared')
               columnsWidth += $(ele).outerWidth(true);
             });
           columnsWidth += 2;//显示边线
+          console.log(columnsWidth);
           return columnsWidth;
         }
       }

@@ -1,4 +1,11 @@
-import { bindFontStyle, bindID, bindValue, bindFocus, bindPaste } from './utils';
+import {
+  bindFontStyle,
+  bindID,
+  bindValue,
+  bindFocus,
+  bindPaste,
+  bindTabIndex,
+} from '../utils';
 import {
   UICell,
   UIRow,
@@ -23,7 +30,6 @@ import {
   ROW_INDEX_CHANGE,
   ROW_REMOVED,
 } from '../../../../shared/models';
-import { eleFactory } from '../../../../shared/models/util';
 import { pasteHook } from '../../../../shared/hooks/paste';
 import { getNumber } from '../../services';
 
@@ -54,8 +60,8 @@ export function createNumber(input) {
   });
   bindID(input.tab, input.cell, input.row, ele, 'number');
   bindFocus(ele, input.cell, input.scope);
+  bindTabIndex(input, ele);
   
-  ele.tabIndex = 100000 * (input.tabIndex + 1) + 100 * (input.rowIndex + 1) + input.index;
   ele.addEventListener('blur', () => {
     input.cell.validate && input
       .cell

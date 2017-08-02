@@ -1,4 +1,3 @@
-import { eleFactory } from '../../../../shared/models/util';
 
 export function createUpload(input) {
   let ele = input.cell.ele.children[0];

@@ -1,6 +1,5 @@
-import { bindFontStyle, bindID, bindFocus } from './utils';
+import { bindFontStyle, bindID, bindFocus } from '../utils';
 import { datePicker } from '../../../../shared/hooks/date-picker';
-import { eleFactory } from '../../../../shared/models/util';
 
 import {
   UICell,

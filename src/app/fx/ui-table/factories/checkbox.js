@@ -1,4 +1,4 @@
-import { bindFontStyle, bindID } from './utils';
+import { bindFontStyle, bindID } from '../utils';
 import {
   UICell,
   UIRow,
@@ -23,7 +23,6 @@ import {
   ROW_INDEX_CHANGE,
   ROW_REMOVED,
 } from '../../../../shared/models';
-import { eleFactory } from '../../../../shared/models/util';
 
 /**
  * @desc 创建check类型
@@ -39,11 +38,11 @@ export function createCheckBox(input) {
 
   ele.checked = input.row.checked;
   input.row.on(ROW_CHECKED, (value) => {
-      ele.checked = value;
-      input.scope.$apply();
-    });
+    ele.checked = value;
+  });
   ele.addEventListener('change', () => {
     input.row.checked = ele.checked;
+    input.scope.$apply();
   });
   return ele;
 }

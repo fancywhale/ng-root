@@ -1,5 +1,4 @@
-import { bindFontStyle, bindID, bindFocus, bindBlur, bindValue, bindPaste } from './utils';
-import { eleFactory } from '../../../../shared/models/util';
+import { bindFontStyle, bindID, bindFocus, bindBlur, bindValue, bindPaste, bindTabIndex } from '../utils';
 
 import {
   UICell,
@@ -38,6 +37,7 @@ export function createTextarea(input) {
   input.cell.on(CELL_VALUE_CHANGED, () => {
     ele.innerText = input.cell.value;
   });
+  bindTabIndex(input, ele);
   bindPaste(input, ele);
   return ele;
 }

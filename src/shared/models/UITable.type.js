@@ -1,35 +1,15 @@
 import * as events from 'events';
 import { UIRow, ROW_REMOVED } from './UIRow.type';
-import { eleFactory } from './util';
 
 export const ADD_ROW_EVENT = 'ADD_ROW_EVENT';
 export const BEFORE_ROWS_CHANGED = 'BEFORE_ROWS_CHANGED';
 export const AFTER_ROWS_CHANGED = 'AFTER_ROWS_CHANGED';
 
 /**
+ * @abstract
  * abstract class
  */
 export class UITable extends events.EventEmitter {
-
-  /**
-   * factory row html by given tab and row data
-   * @param {Object} tab data
-   * @param {Object} row data
-   */
-  static _factoryRowStr(tab, row) {
-    let cells =  row.cells.map(cell => {
-      let payload = {
-        cell,
-        row,
-        tab,
-      };
-      let func = eleFactory[cell.dataType] || (() => '');
-      return `
-          <td>${func.apply(payload)}</td>
-        `;
-    });
-    return `<tr react-row>${cells.join('')}</tr>`;
-  };
 
   set rows(value) {
     if (!value instanceof Array) {
@@ -116,7 +96,7 @@ export class UITable extends events.EventEmitter {
     var startTime = Date.now();
     
     let rows = data.rows.map((row) => {
-      return UITable._factoryRowStr(tab, row);
+      return this._factoryRowStr(tab, row);
     }).join('');
     
     var startTime = Date.now();
@@ -138,9 +118,19 @@ export class UITable extends events.EventEmitter {
     return row;
   }
 
+  deleteRows() {
+    this._rows
+      .filter(row => row.checked)
+      .forEach(row => {
+        row.remove();
+      });
+  }
+
   append(ele) {
     this._$ele.insertAfter($(ele).find('thead'));
   }
+
+
 
   /**
    * create new row and append to table
@@ -218,9 +208,36 @@ export class UITable extends events.EventEmitter {
 
   /**
    * factory row element
-   * @param {Object} rowData 
+   * @param {{Object}} rowData 
    */
   _factoryRowEle(rowData) {
-    return $(UITable._factoryRowStr(this.tab, rowData))[0];
+    return $(this._factoryRowStr(this.tab, rowData))[0];
   }
+
+  /**
+   * @abstract
+   * factory cell's html string
+   * @param {{cell, row, tab}} payload 
+   */
+  _factoryCellStr(payload) { }
+
+  /**
+   * factory row html by given tab and row data
+   * @param {Object} tab data
+   * @param {Object} row data
+   */
+  _factoryRowStr(tab, row) {
+    let cells =  row.cells.map(cell => {
+      let payload = {
+        cell,
+        row,
+        tab,
+      };
+      return `
+          <td>${this._factoryCellStr(payload)}</td>
+        `;
+    });
+    return `<tr react-row>${cells.join('')}</tr>`;
+  };
+  
 }

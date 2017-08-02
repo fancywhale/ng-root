@@ -1,5 +1,5 @@
 import { UITable } from '../../../shared/models';
-
+import { eleFactory } from './eleFactory';
 import {
   createDateTime,
   createCheckBox,
@@ -70,5 +70,16 @@ export class FXUITable extends UITable {
     };
     var content = func(input);
     return content;
+  }
+
+
+  /**
+   * @protected
+   * generate ele string
+   * @param {string} dataType 
+   */
+  _factoryCellStr(payload) { 
+    let func = eleFactory[payload.cell.dataType] || (() => '');
+    return func.apply(payload);
   }
 }

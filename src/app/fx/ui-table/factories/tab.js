@@ -1,6 +1,5 @@
-import { bindFontStyle, bindID, bindValue, bindFocus, bindBlur } from './utils';
+import { bindFontStyle, bindID, bindValue, bindFocus, bindBlur } from '../utils';
 import { selectHook } from '../../../../shared/hooks/select';
-import { eleFactory } from '../../../../shared/models/util';
 
 import {
   UICell,

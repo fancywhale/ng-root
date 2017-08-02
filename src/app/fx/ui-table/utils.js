@@ -1,4 +1,4 @@
-import { pasteHook } from '../../../../shared/hooks/paste';
+import { pasteHook } from '../../../shared/hooks/paste';
 
 import {
   UICell,
@@ -23,7 +23,7 @@ import {
   ROW_CHECKED,
   ROW_INDEX_CHANGE,
   ROW_REMOVED,
-} from '../../../../shared/models';
+} from '../../../shared/models';
 
 /**
  * utils
@@ -87,5 +87,33 @@ export function bindPaste(input, ele) {
     if (ele.getAttribute('paste-text') === 'true') return;
     pasteHook(input.scope, input.tab, input.$dataTable, input.row, input.cell, ele);
     ele.setAttribute('paste-text', 'true');
+  });
+}
+
+export function bindTabIndex(input, ele) {
+  input.cell.on(CELL_COLINDEX_CHANGED, () => {
+    giveTabIndex(input, ele);
+  });
+  input.row.on(ROW_INDEX_CHANGE, () => {
+    giveTabIndex(input, ele);
+  });
+}
+
+export function giveTabIndex(input, ele) {
+  ele.tabIndex = calTabIndex(input);
+}
+
+export function calTabIndex(input) {
+  100000 * (input.tabIndex + 1) + 100 * (input.row.rowIndex + 1) + input.cell.colIndex;
+}
+
+
+export function escapeStr(value) {
+  return value ? value.toString().replace(/\"/g, '\\\"') : '';
+}
+
+export function escapeHtml(value) {
+  return String(value || '').replace(/[&<>"'`=\/]/g, function (s) {
+    return entityMap[s];
   });
 }

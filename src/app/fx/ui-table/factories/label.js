@@ -1,4 +1,4 @@
-import { bindFontStyle, bindID, bindValue, bindFocus, bindBlur, giveFontClass } from './utils';
+import { bindFontStyle, bindID, bindValue, bindFocus, bindBlur, giveFontClass } from '../utils';
 
 import {
   UICell,
@@ -25,7 +25,6 @@ import {
   ROW_INDEX_CHANGE,
   ROW_REMOVED,
 } from '../../../../shared/models';
-import { eleFactory } from '../../../../shared/models/util';
 
 export function createLabel(input) {
   let ele = input.cell.ele.children[0];

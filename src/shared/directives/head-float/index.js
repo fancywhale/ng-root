@@ -1,11 +1,10 @@
 'use strict';
 
 angular.module('app.shared')
-  .directive('ngHeadFloat', ['$timeout', '$parse', function ($timeout, $parse) {
+  .directive('ngHeadFloat', ['$timeout', '$parse', '$compile', ($timeout, $parse, $compile) => {
     return {
-      require: '?ngModel',
       restrict: 'A',
-      link: function ($scope, element, attrs, ngModel) {
+      link: function ($scope, element, attrs) {
         let clonePanel = null;
         let clonePanelHead = null;
         let freezeColumnNum = 2;
@@ -28,10 +27,23 @@ angular.module('app.shared')
         $(window).on('resize', () => {
           getColWidth(true);
           updateView();
-          updateElementView();          
-        })
+          updateElementView();
+        });
+
+        $timeout(() => {
+          floatBarTop = floatBarTop || $("#float_bar_top");
+          orgHeader = orgHeader || $('#table_float_table_head_div_' + tabId);
+          panel = panel || $('#main_table_panel_' + tabId);
+          tabHead = tabHead || $('#tbhead_' + tabId);
+          panelHead = panelHead || $('#table_float_table_head_div_' + tabId);
+          headerTitle = headerTitle || $('#tbhead_' + tabId);
+          table = table || $("#main_table_" + tabId);
+        }, 1000);
         
-        element.scroll(function () {
+        element.scroll(onElementScroll);
+        $(window).scroll(onWindowScroll);
+
+        function onElementScroll() {
           var sl = Math.max(element[0].scrollLeft, document.documentElement.scrollLeft);
           scroll_header
             && scroll_header.length
@@ -55,9 +67,9 @@ angular.module('app.shared')
             panelBody.after(clonePanel);
             updateElementView();
           }
-        });
+        }
 
-        $(window).scroll(function () {
+        function onWindowScroll() {
           floatBarTop = floatBarTop || $("#float_bar_top");
           orgHeader = orgHeader || $('#table_float_table_head_div_' + tabId);
           panel = panel || $('#main_table_panel_' + tabId);
@@ -81,6 +93,9 @@ angular.module('app.shared')
               scroll_header.css({ zIndex: 2 });
               scroll_fix_header = scroll_fix_header || $('<div></div>');
               scroll_fix_header.append(floatTableHead.clone().removeAttr('id').css({ 'width': floatTableHead.width() }));
+              
+              scroll_header_title[0].removeAttribute('ng-if');
+              $compile(scroll_header_title)($scope);
               
               element.after(scroll_header_title);
               element.after(scroll_header);
@@ -111,7 +126,7 @@ angular.module('app.shared')
               scroll_fix_header._isVisiable = false;
             }
           }
-        });
+        }
 
         function updateView() {
           if (!scroll_header_title) return;
@@ -131,6 +146,7 @@ angular.module('app.shared')
         }
 
         function getColWidth(flag) {
+          if (!table) return;
           if (columnsWidth > 0 && !flag) return columnsWidth;
           var columnsNumber = 0;
           table

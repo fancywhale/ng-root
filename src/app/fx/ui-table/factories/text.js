@@ -1,6 +1,5 @@
-import { bindFontStyle, bindID, bindFocus, bindBlur, bindValue } from './utils';
+import { bindFontStyle, bindID, bindFocus, bindBlur, bindValue, bindTabIndex } from '../utils';
 import { datePicker } from '../../../../shared/hooks/date-picker';
-import { eleFactory } from '../../../../shared/models/util';
 import { pasteHook } from '../../../../shared/hooks/paste';
 
 import {
@@ -37,6 +36,7 @@ export function createText(input) {
   bindValue(input.cell, ele, input.tab, input.scope);
 
   pasteHook(input.scope, input.tab, input.$dataTable, input.row, input.cell, ele);
+  bindTabIndex(input, ele);
 
   return ele;
 }

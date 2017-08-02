@@ -1,4 +1,4 @@
-import { bindFontStyle, bindID, bindFocus } from './utils';
+import { bindFontStyle, bindID, bindFocus } from '../utils';
 import { datePicker } from '../../../../shared/hooks/date-picker';
 import {
   UICell,
@@ -24,7 +24,6 @@ import {
   ROW_INDEX_CHANGE,
   ROW_REMOVED,
 } from '../../../../shared/models';
-import { eleFactory } from '../../../../shared/models/util';
 import { pasteHook } from '../../../../shared/hooks/paste';
 
 
@@ -40,6 +39,7 @@ export function createDateTime(input) {
   });
   bindFontStyle(ele);
   bindFocus(ele, input.cell, input.scope);
+  bindTabIndex(input, ele);
 
   ele.addEventListener('blur', () => {
     if (input.cell.validate) {

@@ -1,5 +1,5 @@
 import { ScrollService } from './services/scroll.service';
-import { checkIsNotEmptyDynamicHead, addCommand } from './services';
+import { checkIsNotEmptyDynamicHead, addCommand, deleteCommand } from './services';
 
 angular.module('fx')
   .directive('cwhbbbfx', [() => {
@@ -564,58 +564,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
     } else if ('add' === button.action) {
       addCommand(arguments[1]);
     } else if ('delete' === button.action) {
-      var tab = arguments[1];
-      //var selectedRowIds = [];
-      var selectedNoIdRowIndexs = [];
-      var selectedRowIndexs = [];
-      var canDel = true;
-      angular.forEach(tab.table.tbody.rows, function (row, rowIndex) {
-        if (row.checked) {
-          if (row.id) {
-            //row.data.whfshxydm&&row.data.whfshxydm=='XT'
-            //						if(row.data.xmid=='0'){
-            //							canDel=false;
-            //						}
-            selectedRowIndexs.push(rowIndex);
-          } else {
-            selectedNoIdRowIndexs.push(rowIndex);
-          }
-        }
-      });
-      //			if(!canDel){
-      //				alert('非自定义指标不能删除！');
-      //				return;
-      //			}
-      if (selectedRowIndexs.length <= 0 && selectedNoIdRowIndexs.length <= 0) {
-        setPrompt('请选中要删除的记录', false);
-      } else {
-        if (selectedRowIndexs.length > 0) {
-          angular.forEach(selectedRowIndexs, function (index) {
-            tab.table.tbody.rows[index].del = true;
-          });
-        } else {
-          for (var i = selectedNoIdRowIndexs.length - 1; i >= 0; i--) {
-            tab.table.tbody.rows.splice(selectedNoIdRowIndexs[i], 1);
-          }
-        }
-        refreshGroup(tab);
-        $scope.sumRowRefresh(tab);
-        $scope.exeFuncs(tab);
-        //				confirm('提示','是否确认删除选中的记录?',function(dialog){
-        //					$scope.$apply(function(){
-        //						if(selectedRowIndexs.length>0){
-        //							angular.forEach(selectedRowIndexs,function(index){
-        //								tab.table.tbody.rows[index].del=true;
-        //							});
-        //						}else{
-        //							for(var i=selectedNoIdRowIndexs.length-1;i>=0;i--){
-        //								tab.table.tbody.rows.splice(selectedNoIdRowIndexs[i],1);
-        //							}
-        //						}
-        //						refreshGroup(tab);
-        //					});
-        //				});
-      }
+      deleteCommand(arguments[1]);
     } else if ('editcol' === button.action) {
       if ($scope.uimodule.label && $scope.uimodule.label.dataType == 'datetime' && isNull($scope.uimodule.label.value)) {
         setPrompt('请选择资料属期', false);

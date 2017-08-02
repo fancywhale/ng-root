@@ -133,7 +133,7 @@ export class UIRow extends events.EventEmitter {
    * @param {number} index 
    */
   append(index) {
-    let $table = $(this._table);
+    let $table = $(this._table.ele);
     let $rows = $table.find('tr.react-row');
     let $ele = $(this._ele);
     if (!$rows.length) {

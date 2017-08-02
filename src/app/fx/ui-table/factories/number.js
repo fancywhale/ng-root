@@ -25,18 +25,11 @@ import {
 } from '../../../../shared/models';
 import { eleFactory } from '../../../../shared/models/util';
 import { pasteHook } from '../../../../shared/hooks/paste';
+import { getNumber } from '../../services';
 
 
 export function createNumber(input) {
 
-  function getNumber(value, decimal) {
-    if (typeof value === 'string') {
-      return value;
-    } else {
-      value = value || 0;
-      return value.toFixed(decimal);
-    }
-  }
 
   input.cell.value = getNumber(input.cell.value, input.cell.decimal);
   // input

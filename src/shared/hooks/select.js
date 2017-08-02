@@ -36,12 +36,12 @@ export function selectHook($scope, element, cell) {
     ul.show();
   });
   element.on('blur', function () {
-    hideul();
+    setTimeout(() => {
+      hideul();
+    }, 300);  
   });
   var hideul = () => {
-    setTimeout(() => {
       ul.hide();
-    }, 300);
   }
   var selectItem = function (value, name) {
     if (!window.changeflag) {
@@ -53,7 +53,9 @@ export function selectHook($scope, element, cell) {
       cell.validate();
     }
     hideul();
-    $scope.$apply();
+    setTimeout(() => {
+      $scope.$apply();
+    });
   }
   angular.forEach(cell.options, function (option) {
     var name = option.name;

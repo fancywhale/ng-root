@@ -2,19 +2,34 @@ import * as events from 'events';
 import { UIRow, ROW_REMOVED } from './UIRow.type';
 import { eleFactory } from './util';
 
-export const ADD_ROW_EVENT = 'ADDROW_EVENT';
+export const ADD_ROW_EVENT = 'ADD_ROW_EVENT';
 export const BEFORE_ROWS_CHANGED = 'BEFORE_ROWS_CHANGED';
 export const AFTER_ROWS_CHANGED = 'AFTER_ROWS_CHANGED';
 
+/**
+ * abstract class
+ */
 export class UITable extends events.EventEmitter {
 
-  static factory(tableData, tabid) {
-    var table = new UITable(tabid);
-
-    table.init(tableData);
-
-    return table;
-  }
+  /**
+   * factory row html by given tab and row data
+   * @param {Object} tab data
+   * @param {Object} row data
+   */
+  static _factoryRowStr(tab, row) {
+    let cells =  row.cells.map(cell => {
+      let payload = {
+        cell,
+        row,
+        tab,
+      };
+      let func = eleFactory[cell.dataType] || (() => '');
+      return `
+          <td>${func.apply(payload)}</td>
+        `;
+    });
+    return `<tr react-row>${cells.join('')}</tr>`;
+  };
 
   set rows(value) {
     if (!value instanceof Array) {
@@ -46,9 +61,33 @@ export class UITable extends events.EventEmitter {
     return this._tabid;
   }
 
-  constructor(tabid) {
+  get tab() {
+    return this._tab;
+  }
+
+  get uimodule() {
+    return this._uimodule;
+  }
+
+  get scope() {
+    return this.__scope;
+  }
+
+  get tabIndex() {
+    return this._uimodule.tabs.indexOf(this._tab);
+  }
+
+  /**
+   * constructor of UITable
+   * @param {*} tab 
+   * @param {*} uimodule 
+   */
+  constructor(scope, tab, uimodule) {
     super();
-    this._tabid = tabid;
+    this.__scope = scope; // angular scope
+    this._tab = tab;
+    this._uimodule = uimodule
+    this._tabid = tab.id;
     this._ele = document.createElement('tbody');
     this._rows = [];
 
@@ -58,6 +97,17 @@ export class UITable extends events.EventEmitter {
     });
   }
 
+  /**
+   * @abstract
+   * abstract method that need to be implemented in inheritance
+   * @param  {} cellData
+   * @param  {} row Data
+   * @param  {} colIndex
+   * @param  {} rowIndex
+   * @returns template
+   */
+  cellFactory(cell, row, uitab, colIndex, rowIndex, tabIndex, scope) { }
+  
   init(data, tab) {
     if (!data.rows instanceof Array) {
       throw new Error('table rows should be instance of array.')
@@ -66,28 +116,13 @@ export class UITable extends events.EventEmitter {
     var startTime = Date.now();
     
     let rows = data.rows.map((row) => {
-      let cells = row.cells.map(cell => {
-        let payload = {
-          cell,
-          row,
-          tab,
-        };
-        let func = eleFactory[cell.dataType] || (() => '');
-        return `
-          <td>${func.apply(payload)}</td>
-        `;
-      });
-      return `<tr>
-          ${cells.join('')}
-        </tr>`;
+      return UITable._factoryRowStr(tab, row);
     }).join('');
-    console.log('table scripting time:', Date.now() - startTime);
     
     var startTime = Date.now();
     let tableEle = $(`<tbody>${rows}</tbody>`)[0];
     this._ele = tableEle;
     this._$ele = $(this._ele);
-    console.log('table creating time:', Date.now() - startTime);
     
     data.rows.forEach((rowData, index) => {
       this._rows.push(new UIRow(rowData, this, tableEle.rows[index]));
@@ -96,10 +131,9 @@ export class UITable extends events.EventEmitter {
 
   addRow(rowData) {
     let row = this._newRow(rowData);
-    row.table = this;
-    this._addRow(row, this._rows.index);
+    this._addRow(row, this._rows.length);
     // raise row add event;
-    this.emit(ADDROW_EVENT, row);
+    this.emit(ADD_ROW_EVENT, row);
 
     return row;
   }
@@ -108,6 +142,11 @@ export class UITable extends events.EventEmitter {
     this._$ele.insertAfter($(ele).find('thead'));
   }
 
+  /**
+   * create new row and append to table
+   * @param {*} row 
+   * @param {*} index 
+   */
   _addRow(row, index) {
     this._rows.splice(index, 0, row);
     row.on(ROW_REMOVED, (r, index) => {
@@ -115,11 +154,16 @@ export class UITable extends events.EventEmitter {
         this._rows[i].rowIndex = i;
       };
     });
+
+    // postbuild cells
+    row.cells.forEach(cell => {
+      cell.postBuild();
+    });
     row.append(index);
   }
 
-  _newRow(rowData) {
-    return new UIRow(rowData, this);
+  _newRow(rowData, ele = this._factoryRowEle(rowData)) {
+    return new UIRow(rowData, this, ele);
   }
 
   _createNewRows(newRows) {
@@ -138,6 +182,11 @@ export class UITable extends events.EventEmitter {
     }
   }
 
+  /**
+   * find rows leaving and coming before changes applied
+   * @param {UIRow[]} oldRows 
+   * @param {UIROW[]} newRows 
+   */
   _findRowChange(oldRows, newRows) {
     let rowsToRemove = [];
     let rowsToCreate = [];
@@ -165,5 +214,13 @@ export class UITable extends events.EventEmitter {
       rowsToRemove,
       rowsToCreate,
     };
+  }
+
+  /**
+   * factory row element
+   * @param {Object} rowData 
+   */
+  _factoryRowEle(rowData) {
+    return $(UITable._factoryRowStr(this.tab, rowData))[0];
   }
 }

@@ -191,6 +191,10 @@ export class UICell extends events.EventEmitter {
     this._updateID();
   }
 
+  postBuild() {
+    this._postBuild();
+  }
+
   /**
    * update cell id
    */
@@ -244,5 +248,13 @@ export class UICell extends events.EventEmitter {
     }
   }
 
+  _postBuild() {
+    this._table.cellFactory(
+      this,
+      this._row,
+      this._colIndex,
+      this._row.rowIndex
+    );
+  }
   
 }

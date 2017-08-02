@@ -78,6 +78,7 @@ angular.module('app.shared')
               
               floatTableHead = $('#table_float_table_head_' + tabId);
               scroll_header = floatTableHead.clone().attr('id', 'table_float_table_head_copy_' + tabId);//更改复制的表格id
+              scroll_header.css({ zIndex: 2 });
               scroll_fix_header = scroll_fix_header || $('<div></div>');
               scroll_fix_header.append(floatTableHead.clone().removeAttr('id').css({ 'width': floatTableHead.width() }));
               

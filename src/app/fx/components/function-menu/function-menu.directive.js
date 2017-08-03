@@ -4,5 +4,8 @@ angular.module('fx')
       restrict: 'E',
       replace: true,
       templateUrl: 'app/fx/components/function-menu/function-menu.html',
+      controller: ['$scope', ($scope)=> {
+        $scope.initDrag();
+      }],
     }
   }]);

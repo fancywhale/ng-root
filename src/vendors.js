@@ -2,6 +2,7 @@ import 'babel-polyfill';
 
 import 'jquery';
 import 'jquery-ui';
+import 'jquery-contextmenu';
 import 'blueimp-file-upload/js/jquery.iframe-transport.js';
 import 'blueimp-file-upload/js/jquery.fileupload.js';
 import 'blueimp-file-upload/js/jquery.fileupload-process.js';

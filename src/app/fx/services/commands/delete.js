@@ -16,7 +16,7 @@ export function deleteCommand(tab) {
     setPrompt('请选中要删除的记录', false);
   } else {
     selectedRows.forEach(row => {
-      row.del = true;
+      row.remove(true);
     });
     selectedNoIdRows.forEach(row => {
       row.remove();

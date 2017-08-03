@@ -27,21 +27,6 @@
       "depends": [
         "jquery:jQuery"
       ]
-    },
-    "common": {
-      "depends": [
-        "jquery:jQuery"
-      ]
-    },
-    "sword-adapater": {
-      "depends": [
-        "jquery:jQuery"
-      ]
-    },
-    "nav": {
-      "depends": [
-        "jquery:jQuery"
-      ]
     }
   },
   "devDependencies": {
@@ -99,6 +84,7 @@
     "events": "^1.1.1",
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
+    "jquery-contextmenu": "^2.5.0",
     "jquery-ui": "^1.12.1",
     "ng-dialog": "^1.3.0"
   }

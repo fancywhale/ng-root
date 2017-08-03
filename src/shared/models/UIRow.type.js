@@ -32,12 +32,12 @@ export class UIRow extends events.EventEmitter {
     return this._del;
   }
 
-  set del(value) {
-    if (this._del === value) return;
-    this._del = value;
-    this._toggleHide();
-    this.emit(ROW_DEL_CHANGE, value);
-  }
+  // set del(value) {
+  //   if (this._del === value) return;
+  //   this._del = value;
+  //   this._toggleHide();
+  //   this.emit(ROW_DEL_CHANGE, value);
+  // }
 
   get hide() {
     return this._hide;
@@ -75,6 +75,28 @@ export class UIRow extends events.EventEmitter {
 
   get table() {
     return this._table;
+  }
+
+  get isFirst() {
+    let rows = this._table.rows;
+    let i = 0;
+    while (i < rows.length) {
+      if (!rows[i]._hide && !rows[i]._del) break;
+      i++;
+    }
+    if (rows[i] === this) return true;
+    return false;
+  }
+
+  get isLast() {
+    let rows = this._table.rows;
+    let i = rows.length - 1;
+    while (i > 0) {
+      if (!rows[i]._hide && !rows[i]._del) break;
+      i--;
+    }
+    if (rows[i] === this) return true;
+    return false;
   }
 
   constructor(obj = {}, table, rowEle) {
@@ -121,9 +143,16 @@ export class UIRow extends events.EventEmitter {
     }
   }
 
-  remove() {
+
+  /**
+   * remove row from ui, if reserved flag is false, then remove data as well
+   * @param {boolean} reserved 
+   */
+  remove(reserved = false) {
     let index = this._table.rows.indexOf(this);
-    this._table.rows.splice(index, 1);
+    if (!reserved) {
+      this._table.rows.splice(index, 1);
+    }
     this._cells.forEach(cell => {
       cell.dispose();
     });
@@ -146,7 +175,7 @@ export class UIRow extends events.EventEmitter {
    */
   append(index) {
     let $table = $(this._table.ele);
-    let $rows = $table.find('tr[react-row]');
+    let $rows = $table.children('.react-row');
     let $ele = $(this._ele);
     if (!$rows.length) {
       $table.prepend(this._ele);

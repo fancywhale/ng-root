@@ -22,12 +22,15 @@ export function checkIsNotEmptyDynamicHead(tab) {
 
 
 export function getNumber(value, decimal) {
-  if (typeof value === 'string') {
-    return value;
-  } else {
-    value = value || 0;
-    return value.toFixed(decimal);
+  value = value || 0;
+  if (!isNumeric(value)) {
+    return '';
   }
+  typeof value === 'string' && (value = parseFloat(value));
+  return value.toLocaleString(
+    undefined, // use a string like 'en-US' to override browser locale
+    { minimumFractionDigits: 2 }
+  );
 }
 
 //失去焦点校验
@@ -99,4 +102,8 @@ export function cellvalidate(res) {
     cell.value = cell.value + cell.unit;
   }
   return result;
+}
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
 }

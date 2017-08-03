@@ -1,4 +1,4 @@
-import { bindFontStyle, bindID, bindFocus } from '../utils';
+import { bindFontStyle, bindID, bindFocus, bin } from '../utils';
 import { datePicker } from '../../../../shared/hooks/date-picker';
 
 import {
@@ -28,7 +28,12 @@ import {
 
 export function createDisable(input) {
   let ele = input.cell.ele.children[0];
+  let span = $(ele).find('span')[0];
 
-  $(ele).find('span').text(input.cell.value || '---');
+  span.innerText = input.cell.value || '---';
+
+  input.cell.on(CELL_VALUE_CHANGED, () => {
+    span.innerText = input.cell.value;
+  });
   return ele;
 }

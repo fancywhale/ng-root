@@ -6,6 +6,7 @@ import {
   bindPaste,
   bindTabIndex,
 } from '../utils';
+
 import {
   UICell,
   UIRow,
@@ -30,14 +31,17 @@ import {
   ROW_INDEX_CHANGE,
   ROW_REMOVED,
 } from '../../../../shared/models';
-import { pasteHook } from '../../../../shared/hooks/paste';
+import {
+  pasteHook,
+  calculationHook,
+} from '../../../../shared/hooks';
+
 import { getNumber } from '../../services';
 
 
 export function createNumber(input) {
 
 
-  input.cell.value = getNumber(input.cell.value, input.cell.decimal);
   // input
   //   .scope
   //   .numberCellChange(input.tab, input.cell.colIndex);
@@ -48,36 +52,28 @@ export function createNumber(input) {
   let ele = input.cell.ele.children[0];
   // ele.value = input.cell.value || 0;
 
-  ele.addEventListener('change', () => {
-    input.cell.value = ele.value;
+  input.cell.editable = true;
+
+  input.cell.on(CELL_VALUE_CHANGED, () => {
+    ele.innerText = input.cell.value;
+  });
+  bindID(input.tab, input.cell, input.row, ele, 'number');
+  bindFocus(ele, input.cell, input.scope);
+  // bindTabIndex(input, ele);
+  
+  ele.addEventListener('blur', () => {
+    input.cell.value = ele.innerText;
     input.scope.exeFuncs(input.tab, input.cell, input.row.rowIndex, input.cell.colIndex);
+    input.cell.validate && input.cell.validate();
+    input.scope.numberCellChange(input.tab, input.cell.colIndex);
+    input.scope.sumRowRefresh(input.tab);
     input.scope.$apply();
     window.changeflag = true;
   });
 
-  input.cell.on(CELL_VALUE_CHANGED, () => {
-    ele.value = input.cell.value;
-  });
-  bindID(input.tab, input.cell, input.row, ele, 'number');
-  bindFocus(ele, input.cell, input.scope);
-  bindTabIndex(input, ele);
-  
-  ele.addEventListener('blur', () => {
-    input.cell.validate && input
-      .cell
-      .validate();
-    input
-      .scope
-      .numberCellChange(input.tab, input.cell.colIndex);
-    input
-      .scope
-      .sumRowRefresh(input.tab);
-    input
-      .scope
-      .$apply();
-  });
-  
-  bindPaste(input, ele);
+  ele.innerText = input.cell.value;
+  calculationHook(input, ele);
+  // bindPaste(input, ele);
   // pasteHook(input.scope, input.tab, input.$dataTable, input.row, input.cell, ele);
 
   // return ele;

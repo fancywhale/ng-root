@@ -37,7 +37,7 @@ export function createTextarea(input) {
   input.cell.on(CELL_VALUE_CHANGED, () => {
     ele.innerText = input.cell.value;
   });
-  bindTabIndex(input, ele);
-  bindPaste(input, ele);
+  // bindTabIndex(input, ele);
+  // bindPaste(input, ele);
   return ele;
 }

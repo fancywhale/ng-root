@@ -103,10 +103,6 @@ export function giveTabIndex(input, ele) {
   ele.tabIndex = calTabIndex(input);
 }
 
-export function calTabIndex(input) {
-  100000 * (input.tabIndex + 1) + 100 * (input.row.rowIndex + 1) + input.cell.colIndex;
-}
-
 
 export function escapeStr(value) {
   return value ? value.toString().replace(/\"/g, '\\\"') : '';

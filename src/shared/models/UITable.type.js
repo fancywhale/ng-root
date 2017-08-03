@@ -1,5 +1,12 @@
 import * as events from 'events';
 import { UIRow, ROW_REMOVED, ROW_DEL_CHANGE } from './UIRow.type';
+import {
+  UIDrag,
+  UIClipboard,
+  UIEdit,
+  EDIT_CELL_BLUR,
+  EDIT_CELL_FOCUS,
+} from './services';
 
 export const ADD_ROW_EVENT = 'ADD_ROW_EVENT';
 export const BEFORE_ROWS_CHANGED = 'BEFORE_ROWS_CHANGED';
@@ -57,6 +64,10 @@ export class UITable extends events.EventEmitter {
     return this._uimodule.tabs.indexOf(this._tab);
   }
 
+  get selection() {
+    return this._dragControl.selection;
+  }
+
   /**
    * constructor of UITable
    * @param {*} tab 
@@ -68,8 +79,10 @@ export class UITable extends events.EventEmitter {
     this._tab = tab;
     this._uimodule = uimodule
     this._tabid = tab.id;
-    this._ele = document.createElement('tbody');
     this._rows = [];
+    this._dragControl = null;
+    this._clipboardControl = null;
+    this._editControl = null;
 
     $(window).on('onload', function () {
       this.rows = [];
@@ -100,9 +113,20 @@ export class UITable extends events.EventEmitter {
     }).join('');
     
     var startTime = Date.now();
-    let tableEle = $(`<tbody>${rows}</tbody>`)[0];
+    let tableEle = $(`<tbody class="react-table">${rows}</tbody>`)[0];
     this._ele = tableEle;
     this._$ele = $(this._ele);
+
+    this._dragControl = new UIDrag(this);
+    this._clipboardControl = new UIClipboard(this);
+    this._editControl = new UIEdit(this);
+
+    this._editControl.on(EDIT_CELL_BLUR, (cell) => {
+    });
+
+    this._editControl.on(EDIT_CELL_FOCUS, (cell) => {
+      this._dragControl.select(cell);
+    });
     
     data.rows.forEach((rowData, index) => {
       let row = new UIRow(rowData, this, tableEle.rows[index]);
@@ -168,14 +192,14 @@ export class UITable extends events.EventEmitter {
           cell.rowspan = 1;
         }
         if (!cell.hide && cell.group && rowIndex != 0) {
-          var cellGroup = (step) => {
+          let cellGroup = (step) => {
             if ((rowIndex - step) < 0) {
               return;
             }
             if (value === rows[rowIndex - step].cells[colIndex].value) {
               if (rows[rowIndex - step].cells[colIndex].hide
-                || rows[rowIndex - step].del == true
-                || rows[rowIndex - step].hide == true) {
+                || rows[rowIndex - step].del
+                || rows[rowIndex - step].hide) {
                 cellGroup(step + 1);
               } else {
                 rows[rowIndex - step].cells[colIndex].rowspan++;
@@ -271,10 +295,10 @@ export class UITable extends events.EventEmitter {
         tab,
       };
       return `
-          <td>${this._factoryCellStr(payload)}</td>
+          <td class="react-cell" data-type="${cell.dataType}" tabindex="1">${this._factoryCellStr(payload)}</td>
         `;
     });
-    return `<tr react-row>${cells.join('')}</tr>`;
+    return `<tr class="react-row">${cells.join('')}</tr>`;
   };
   
 }

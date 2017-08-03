@@ -18,7 +18,6 @@ export const eleFactory = {
 
 function createCheckBox() {
   return `<input 
-      tabindex="${calTabIndex(this)}" 
       react-ele
       type="checkbox"
     />`;
@@ -28,7 +27,6 @@ function createSelect() {
   if (!this.cell.custom && !this.row.id) {
     return `
       <select react-ele
-        tabindex="${calTabIndex(this)}" 
         style="width: 100%;position: relative;z-index: 1;" 
         onchange="window.changeflag=true"/>
         ${this.cell.options.map(opt => `<option value="${opt.value}">${opt.name}</option>`)}
@@ -40,7 +38,6 @@ function createSelect() {
       value = _opt.name;
     }  
     return `<input react-ele
-      tabindex="${calTabIndex(this)}"     
       onchange="window.changeflag=true"
       value="${escapeHtml(value)}" 
       placeholder="请选择"
@@ -77,14 +74,14 @@ function createFileView() {
 }
 
 function createText() {
-  return `<input 
-    tabindex="${calTabIndex(this)}" 
+  return `<div 
+    contenteditable="false"
     react-ele
     paste-text
     onchange="window.changeflag=true" style="width: 100%;"
     type="text"
     value="${escapeHtml(this.cell.value)}" 
-  />`;
+  ></div>`;
 }
 
 function createDialog() {
@@ -102,10 +99,8 @@ function createDisable() {
 function createTextarea() {
   return `
     <div react-ele
-      tabindex="${calTabIndex(this)}"
       ng-paste-text
-      tabindex="${calTabIndex(this)}"
-      contenteditable="true" paste-text
+      contenteditable="false" paste-text
       style="outline:none;position: relative;z-index: 1;margin: 3px;min-height:16px;white-space:normal;word-break:break-all;word-wrap:break-word; " 
     >${escapeHtml(this.cell.value)}</div>`;
 }
@@ -151,17 +146,16 @@ function createFileSelect() {
 
 function createNumber() {
   return `
-    <input react-ele paste-text
-      tabindex="${calTabIndex(this)}"
+    <div react-ele
+      contenteditable="false"
       onchange="window.changeflag=true"
       style="width: 100%; text-align: right;"
-      value="${escapeStr(this.cell.value)}"
-      type="text" />`;
+      onfocus="document.execCommand('selectAll', false, null);"
+      type="text">${escapeHtml(this.cell.value)}</div>`;
 };
 
 function createDateTime() {
   return `<input 
-    tabindex="${calTabIndex(this)}"
     react-ele
     onchange="window.changeflag=true"
     type="text"

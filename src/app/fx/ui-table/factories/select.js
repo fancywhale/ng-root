@@ -36,7 +36,7 @@ export function createSelect(input) {
     bindValue(input.cell, ele, input.scope);
     bindFocus(ele, input.cell, input.scope);
     bindBlur(input.cell, ele, input.tab, input.scope);
-    bindTabIndex(input, ele);
+    // bindTabIndex(input, ele);
 
     return ele;
   } else if ((input.cell.custom && !input.row.id) || input.cell.writeable) {
@@ -44,7 +44,7 @@ export function createSelect(input) {
     bindID(input.tab, input.cell, input.row, ele, 'select');
     bindFontStyle(input.cell, ele);
     bindFocus(ele, input.cell, input.scope);
-    bindTabIndex(input, ele);
+    // bindTabIndex(input, ele);
 
     selectHook(input.scope, $(ele), input.cell);
     input.cell.on(CELL_SELECTNAME_CHANGED, (value) => {

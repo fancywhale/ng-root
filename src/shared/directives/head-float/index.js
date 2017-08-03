@@ -27,15 +27,17 @@ angular.module('app.shared')
         let scroll_header = null;
         let scroll_fix_header = null;
         let floatTableHead = null;
+        let floatTableHeadClone = null;
+        let panelBody = null;
 
         /**
          * update size when resize
          */
-        $(window).on('resize', () => {
+        $(window).on('resize', $.debounce(() => {
           getColWidth(true);
           updateView();
           updateElementView();
-        });
+        }, 300));
 
 
         /**
@@ -69,7 +71,7 @@ angular.module('app.shared')
           table = table || $("#main_table_" + tabId);
 				
           if (!clonePanel) {
-            var panelBody = $('#main_table_panel_body_' + tabId);
+            panelBody = panelBody || $('#main_table_panel_body_' + tabId);
             clonePanel = panelBody.clone().attr('id', 'main_table_panel_body_copy_' + tabId);
             clonePanel.find('.float_scroll_bar').remove();
             clonePanel.css({ 'position': 'absolute', 'width': getColWidth(), 'background-color': '#ffffff', 'top': panelBody.position().top });
@@ -77,10 +79,16 @@ angular.module('app.shared')
               .attr('disabled', 'disabled')
               .attr('tabindex', -1);
             
-            var panelHead = $('#table_float_table_head_div_' + tabId);
+            panelHead = panelHead || $('#table_float_table_head_div_' + tabId);
 					
             clonePanelHead = panelHead.clone().attr('id', 'table_float_table_head_div_copy_fix_' + tabId);//更改复制的表格id
-            clonePanelHead.css({ 'position': 'absolute', 'width': getColWidth(), 'background-color': '#ffffff', 'top': panelHead.position().top, 'overflow': 'hidden' });
+            clonePanelHead.css({
+              'position': 'absolute',
+              'width': getColWidth(),
+              'background-color': '#ffffff',
+              'top': panelHead.position().top,
+              'overflow': 'hidden',
+            });
             panelHead.after(clonePanelHead);
             panelBody.after(clonePanel);
             updateElementView();
@@ -112,13 +120,23 @@ angular.module('app.shared')
             if (!scroll_header_title) {
               scroll_header_title = $($templateCache.get('app/fx/components/tab-head/tab-head.html'))
                 .removeAttr('id')
-                .removeAttr('ng-if');
+                .removeAttr('ng-if')
+                .removeAttr('ng-style');
               
               floatTableHead = $('#table_float_table_head_' + tabId);
-              scroll_header = floatTableHead.clone().attr('id', 'table_float_table_head_copy_' + tabId);//更改复制的表格id
-              scroll_header.css({ zIndex: 2 });
+              floatTableHeadClone = floatTableHead
+                .clone()
+                .removeAttr('id')
+                .css({
+                  'width': floatTableHead.width()
+                });
+
+              scroll_header = floatTableHead
+                .clone()
+                .attr('id', 'table_float_table_head_copy_' + tabId)//更改复制的表格id
+                .css({ zIndex: 2 });
               scroll_fix_header = scroll_fix_header || $('<div></div>');
-              scroll_fix_header.append(floatTableHead.clone().removeAttr('id').css({ 'width': floatTableHead.width() }));
+              scroll_fix_header.append(floatTableHeadClone);
               
               $compile(scroll_header_title)($scope);
               
@@ -167,6 +185,7 @@ angular.module('app.shared')
           if (!scroll_header_title) return;
           var orgHeaderWidth = orgHeader.width();
           var floatTopHeight = floatBarTop.height();
+          floatTableHeadClone.width(floatTableHead.width());
           scroll_header_title.css({ 'position': 'fixed', 'top': floatTopHeight, 'width': orgHeaderWidth, 'z-index': 3 });
           scroll_header.css({ 'position': 'fixed', 'top': floatTopHeight + headerTitle.height(), 'width': orgHeaderWidth, 'border-bottom': '1px solid #efefef' });
           scroll_fix_header.css({ 'position': 'fixed', 'top': floatTopHeight + headerTitle.height(), 'width': getColWidth(), 'overflow': 'hidden', 'z-index': 3 });

@@ -6,7 +6,6 @@ import './year-month-picker';
 import './date-picker';
 import { contentEditable} from '../hooks/content-editable';
 
-
 /**
  * trivials
  */

@@ -1,0 +1,9 @@
+.react-table {
+  & > .react-row{
+    & > .react-cell {
+      *{
+        user-select: none;
+      }
+    }
+  }
+}

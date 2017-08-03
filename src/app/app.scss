@@ -28,3 +28,19 @@
 .ng-select-options>li:HOVER {
   background-color: #dddddd;
 }
+
+*[contenteditable] {
+  outline: none;
+}
+
+.calculate-panel{
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  padding: 5px 5px;
+  min-width: 120px;
+  text-align: left;
+  box-shadow: 0 0 2px #000;
+  border-radius: 2px;
+  z-index: 10;
+}

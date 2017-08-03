@@ -16,8 +16,23 @@ export const CELL_NAME_CHANGED = 'CELL_NAME_CHANGED';
 export const CELL_WRITABLE_CHANGED = 'CELL_WRITABLE_CHANGED';
 export const CELL_DISPOSE = 'CELL_DISPOSE';
 export const CELL_SELECTNAME_CHANGED = 'CELL_SELECTNAME_CHANGED';
+export const CELL_BUILD_DONE = 'CELL_BUILD_DONE';
+
+export const CONTEXT_NEW_UP = 'CONTEXT_NEW_UP';
+export const CONTEXT_NEW_DOWN = 'CONTEXT_NEW_DOWN';
+export const CONTEXT_DELETE = 'CONTEXT_DELETE';
+export const CONTEXT_COPY = 'CONTEXT_COPY';
+export const CONTEXT_PASTE = 'CONTEXT_PASTE';
 
 export class UICell extends events.EventEmitter {
+
+  get cellDataIndex() {
+    return this._row.cells.indexOf(this);
+  }
+
+  get rowDataIndex() {
+    return this._table.rows.indexOf(this._row);
+  }
 
   get colIndex() {
     return this._colIndex;
@@ -75,6 +90,9 @@ export class UICell extends events.EventEmitter {
 
   set value(value) {
     if (value == this._value) return;
+    if (this.row.cells[0] && this.row.cells[0].value === '流动负债') {
+      debugger;
+    }
     this.emit(CELL_BEFORE_VALUE_CHANGED, this._value, value);
     this._value = value;
     this.emit(CELL_VALUE_CHANGED, value);
@@ -124,6 +142,24 @@ export class UICell extends events.EventEmitter {
     return this._ele;
   }
 
+  get row() {
+    return this._row;
+  }
+
+  set editable(value) {
+    this._editable = value;
+  }
+
+  get editable() {
+    return this.dataType === 'textarea'
+      || this.dataType === 'number'
+      || this.dataType === 'text';
+  }
+
+  get visible() {
+    return !this._hide;
+  }
+
   constructor(obj = {}, row, cellEle) {
     super();
     // this._ele = document.createElement('td');
@@ -151,6 +187,7 @@ export class UICell extends events.EventEmitter {
     this.property = '';
     this._row = row;
     this._table = row.table;
+    this._editable = false;
   
     // not firing any event;
     Object.assign(this, obj);
@@ -175,7 +212,8 @@ export class UICell extends events.EventEmitter {
     $ele.remove();
     this.removeAllListeners();
     this._table = null;
-    this.row = null;
+    this._row = null;
+    this._ele = null;
     this.emit(CELL_DISPOSE, this);
   }
 
@@ -193,6 +231,34 @@ export class UICell extends events.EventEmitter {
 
   postBuild() {
     this._postBuild();
+    this.emit(CELL_BUILD_DONE);
+  }
+
+  /**
+   * accpet cell's context-menu response
+   * @param {string} command 
+   */
+  triggerContext(command) {
+    switch (command) {
+      case CONTEXT_COPY:
+        $('[ng-paste-text]').trigger('copy');  
+        break;  
+      case CONTEXT_DELETE:
+        if (this._row.id) {
+          this._row.del = true;
+        } else {
+          this._row.remove();
+        }
+        break;  
+      case CONTEXT_NEW_DOWN:
+        this._table;
+        break;  
+      case CONTEXT_NEW_UP:
+        break;  
+      case CONTEXT_PASTE:
+        $('[ng-paste-text]').trigger('paste');  
+        break;  
+    }
   }
 
   /**
@@ -242,10 +308,6 @@ export class UICell extends events.EventEmitter {
     this._updateSpan();
     this._setAlign();
     this._hideCell();
-    if (this._ele) {
-      this._ele.setAttribute('data-type', this.dataType);
-      this._ele.classList.add('react-cell');
-    }
   }
 
   _postBuild() {
@@ -255,6 +317,7 @@ export class UICell extends events.EventEmitter {
       this._colIndex,
       this._row.rowIndex
     );
+    this._ele.__celldata = this;
   }
   
 }

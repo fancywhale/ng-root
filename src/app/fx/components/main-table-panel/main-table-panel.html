@@ -8,7 +8,7 @@
           <a class="md-tab" 
             ng-class="{'active':ui.tabIndex==$index,'md-tab-right':uitab.title!='综合分析意见'}" 
             ng-click="ui.tabIndex=$index;"
-            href="#{{uitab.id}}">
+            app-archor="{{uitab.id}}">
               {{uitab.title}}
           </a>
         </li>

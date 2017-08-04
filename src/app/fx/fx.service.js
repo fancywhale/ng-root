@@ -96,6 +96,9 @@ angular.module('fx')
           rows.push(row);
         });
         if (tab.table) {
+          if (tab.table.tbody instanceof FXUITable) {
+            tab.table.tbody.dispose();
+          }
           tab.table.tbody = { rows: rows };
           var startTime = new Date().getTime();
           tab.table.tbody = FXUITable.factory(tab.table.tbody, scope, tab, uimodule);

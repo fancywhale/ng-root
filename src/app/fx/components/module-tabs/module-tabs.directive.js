@@ -4,5 +4,8 @@ angular.module('fx')
       restrict: 'E',
       replace: true,
       templateUrl: 'app/fx/components/module-tabs/module-tabs.html',
+      link: (scope, element, attrs) => {
+        
+      }
     }
   }]);

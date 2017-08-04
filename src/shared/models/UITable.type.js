@@ -155,6 +155,19 @@ export class UITable extends events.EventEmitter {
     this._$ele.insertAfter($(ele).find('thead'));
   }
 
+  dispose() {
+    this._dragControl.dispose();
+    this._dragControl = null;
+    this._clipboardControl.dispose();
+    this._clipboardControl = null;
+    this._editControl.dispose();
+    this._editControl = null;
+    this.removeAllListeners();
+    this.rows.forEach(row => row.dispose.bind(row));
+    this._$ele.find('*').off();
+    this._$ele.remove();
+  }
+
   _initRow(row) {
     row.on(ROW_DEL_CHANGE, this._regroupCells.bind(this));
     row.on(ROW_REMOVED, this._regroupCells.bind(this));
@@ -183,34 +196,27 @@ export class UITable extends events.EventEmitter {
 
   _regroupCells() {
     let rows = this._rows;
-    rows.forEach((row, rowIndex) => {
-      if (row.del || row.hide) return;
-      row.cells.forEach((cell, colIndex) => {
-        let value = cell.value;
-        if (cell.group) {
-          cell.hide = false;
-          cell.rowspan = 1;
+    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++){
+      if ((rows[rowIndex].del || rows[rowIndex].hide)) continue;
+      let row = rows[rowIndex];
+      for (let colIndex = 0; colIndex < row.cells.length; colIndex++){
+        let cell = row.cells[colIndex];
+        if (!cell.group) continue;
+        console.log(cell, cell.cellDataIndex, cell.rowDataIndex);
+        cell.hide = false;
+        cell.rowspan = 1;
+        while (
+          ++rowIndex < rows.length
+          && cell.value === rows[rowIndex].cells[cell.cellDataIndex].value
+        ) {
+          if ((rows[rowIndex].del || rows[rowIndex].hide)) continue;
+          rows[rowIndex].cells[cell.cellDataIndex].hide = true;
+          cell.rowspan++;
         }
-        if (!cell.hide && cell.group && rowIndex != 0) {
-          let cellGroup = (step) => {
-            if ((rowIndex - step) < 0) {
-              return;
-            }
-            if (value === rows[rowIndex - step].cells[colIndex].value) {
-              if (rows[rowIndex - step].cells[colIndex].hide
-                || rows[rowIndex - step].del
-                || rows[rowIndex - step].hide) {
-                cellGroup(step + 1);
-              } else {
-                rows[rowIndex - step].cells[colIndex].rowspan++;
-                cell.hide = true;
-              }
-            }
-          };
-          cellGroup(1);
-        }
-      });
-    });
+        if (rowIndex < rows.length) rowIndex--;
+      }
+    }
+    console.log(this);
   }
 
   _newRow(rowData, ele = this._factoryRowEle(rowData)) {

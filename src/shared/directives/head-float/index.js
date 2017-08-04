@@ -39,7 +39,6 @@ angular.module('app.shared')
           updateElementView();
         }, 300));
 
-
         /**
          * to init styles
          */
@@ -223,8 +222,6 @@ angular.module('app.shared')
         }
 
         $scope.$on('$destroy', () => {
-          
-
           element.unbind(onElementScroll);
           window.unbind(onWindowScroll);
 

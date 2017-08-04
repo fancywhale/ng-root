@@ -90,9 +90,9 @@ export class UICell extends events.EventEmitter {
 
   set value(value) {
     if (value == this._value) return;
-    if (this.row.cells[0] && this.row.cells[0].value === '流动负债') {
-      debugger;
-    }
+    // if (this.row.cells[0] && this.row.cells[0].value === '流动负债') {
+    //   debugger;
+    // }
     this.emit(CELL_BEFORE_VALUE_CHANGED, this._value, value);
     this._value = value;
     this.emit(CELL_VALUE_CHANGED, value);
@@ -151,9 +151,7 @@ export class UICell extends events.EventEmitter {
   }
 
   get editable() {
-    return this.dataType === 'textarea'
-      || this.dataType === 'number'
-      || this.dataType === 'text';
+    return this._editable;
   }
 
   get visible() {
@@ -214,6 +212,7 @@ export class UICell extends events.EventEmitter {
     this._table = null;
     this._row = null;
     this._ele = null;
+    this._editable = false;
     this.emit(CELL_DISPOSE, this);
   }
 
@@ -245,7 +244,7 @@ export class UICell extends events.EventEmitter {
         break;  
       case CONTEXT_DELETE:
         if (this._row.id) {
-          this._row.del = true;
+          this._row.remove(true);
         } else {
           this._row.remove();
         }
@@ -285,8 +284,8 @@ export class UICell extends events.EventEmitter {
     if (this._ele) {
       if (this._hide) {
         this._ele.style.display = 'none';
-      } else if (this._hide) {
-        this._ele.style.display = 'table-cell';
+      } else {
+        this._ele.style.display = null;
       }
     }
   }

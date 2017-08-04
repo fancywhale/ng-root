@@ -228,9 +228,9 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       uitab.table.columns[colIndex].sum = $filter('number')(sum, uitab.table.columns[colIndex].decimal);
     }
   }
-	
+
   //初始化数据
-  var initData = function () {
+  function initData () {
     $scope.loadMsg = "数据加载中...";
     //遍历tab，分别加载各自的table数据
     var count = $scope.uimodule.tabs.length;

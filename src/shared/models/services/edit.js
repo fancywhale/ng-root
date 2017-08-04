@@ -34,7 +34,6 @@ export class UIEdit extends events.EventEmitter{
   }
   
   _onKeyDown(cell, e) {
-    console.log(e);
     var keyCode = e.keyCode || e.which; 
     if (keyCode === 9) {
       e.preventDefault();
@@ -63,7 +62,7 @@ export class UIEdit extends events.EventEmitter{
       } else {
         cell.ele.blur();
       }
-    } else if (this._activeCell !== cell ) {
+    } else if (this._activeCell !== cell && !e.ctrlKey && !e.metaKey) {
       if ((e.keyCode >= 48 && e.keyCode <= 57)
       || (e.keyCode >= 96 && e.keyCode <= 105)
       || (e.keyCode >= 65 && e.keyCode <= 90)

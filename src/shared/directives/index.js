@@ -4,6 +4,7 @@ import './file-upload';
 import './select';
 import './year-month-picker';
 import './date-picker';
+import './archor';
 import { contentEditable} from '../hooks/content-editable';
 
 /**

@@ -30,6 +30,8 @@ import {
 export function createText(input) {
   let ele = input.cell.ele.children[0];
 
+  input.cell.editable = true;
+
   bindFontStyle(input.cell, ele);
   bindFocus(ele, input.cell, input.scope);
   bindBlur(input.cell, ele, input.tab, input.scope);

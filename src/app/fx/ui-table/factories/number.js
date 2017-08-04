@@ -52,6 +52,7 @@ export function createNumber(input) {
   let ele = input.cell.ele.children[0];
   // ele.value = input.cell.value || 0;
 
+  input.cell.value = getNumber(input.cell.value);
   input.cell.editable = true;
 
   input.cell.on(CELL_VALUE_CHANGED, () => {

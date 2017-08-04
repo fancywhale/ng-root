@@ -30,6 +30,8 @@ import { contentEditable } from '../../../../shared/hooks/content-editable';
 export function createTextarea(input) {
   let ele = input.cell.ele.children[0];
 
+  input.cell.editable = true;
+
   bindID(input.tab, input.cell, input.row, ele, 'textarea');
   contentEditable(ele, (text) => {
     input.cell.setValue(text);

@@ -26,36 +26,53 @@ angular.module('myapp', ['ngRoute', 'ngDialog','ngSwordHttp', 'xmcjgy', 'fx'])
       items: {
         [CONTEXT_NEW_UP]: {
           name: "插入上方行",
-          visible: function (key, opt) {
-            return !this[0].__celldata.row.isFirst;
+          disabled: function (key, opt) {
+            let cell = this[0].__celldata;
+            return !(!cell.row.isFirst
+              && cell._table._tab
+              && cell._table._tab.footerbar
+              && cell._table._tab.footerbar.buttons
+              && cell._table._tab.footerbar.buttons.find(button => button.action === 'add'));
           },
         },
         [CONTEXT_NEW_DOWN]: {
           name: "插入下方行",
-          visible: function (key, opt) {
-            return !this[0].__celldata.row.isLast;
+          disabled: function (key, opt) {
+            let cell = this[0].__celldata;
+            return !(!cell.row.isLast
+              && cell._table._tab
+              && cell._table._tab.footerbar
+              && cell._table._tab.footerbar.buttons
+              && cell._table._tab.footerbar.buttons.find(button => button.action === 'add'));
           }
         },
         "sep1": "---------",
         [CONTEXT_COPY]: {
           name: "复制",
-          visible: function () {
-            return this.find('[ng-paste-text]').length;
+          disabled: function () {
+            let cell = this[0].__celldata;
+            return !cell.editable || !document.queryCommandSupported('copy');
           },
         },
         [CONTEXT_PASTE]: {
           name: "黏贴",
-          visible: function () {
-            return this.find('[ng-paste-text]').length;
+          disabled: function () {
+            let cell = this[0].__celldata;
+            return !cell.editable || !document.queryCommandSupported('copy');
           },
         },
-        "sep2": {
-          name: "---------",
-          visible: function () {
-            return this.find('[ng-paste-text]').length;
+        "sep2": "---------",
+        [CONTEXT_DELETE]: {
+          name: "删除行",
+          disabled: function (key, opt) {
+            let cell = this[0].__celldata;
+            return !(!cell.row.isLast
+              && cell._table._tab
+              && cell._table._tab.footerbar
+              && cell._table._tab.footerbar.buttons
+              && cell._table._tab.footerbar.buttons.find(button => button.action === 'delete'));
           }
         },
-        [CONTEXT_DELETE]: { name: "删除行" },
       }
     };
     $.contextMenu(options);

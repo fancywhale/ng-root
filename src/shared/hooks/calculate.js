@@ -64,7 +64,7 @@ export function calculationHook(input, ele) {
     var flag = null;
     $(ele).mouseover(function (e) {
       flag = true;
-      $.debounce(() => {
+      setTimeout(() => {
         if (!flag) return;
         contentCache['main_table_C0201-3 tbody'] = contentCache['main_table_C0201-3 tbody'] || $('#main_table_C0201-3 tbody')[0];
         contentCache['main_table_C0201-4 tbody'] = contentCache['main_table_C0201-4 tbody'] || $('#main_table_C0201-4 tbody')[0];
@@ -79,19 +79,16 @@ export function calculationHook(input, ele) {
           calculateDivRender({ 'left': e.pageX, 'top': e.pageY - 80 }, calculateDesc, checkedDesc);
           calculateDiv.insertAfter($(ele));
           calculateDiv.fadeIn(300);
-          console.log(1);
         }
       }, 300);
     }).mouseout(function (e) {
       flag = false;
       if (calculateDiv) {
         calculateDiv.hide();
-        console.log(2);
       }
     }).mousemove(function (e) {
       if (calculateDiv) {
         calculateDivRender({ 'left': e.pageX + 30, 'top': e.pageY - 80 });
-        console.log(3);
       }
     }).mousedown(function (e) {
       if (3 == e.which) {

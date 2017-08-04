@@ -3,62 +3,147 @@ export class UIClipboard {
 
   constructor(table) {
     this._table = table;
+    this._deleteEle = null;
     this.init();
   }
 
   init() {
+    if (!document.queryCommandSupported('copy')) return;
+    this._deleteEle = document.getElementById('_clipboardDelegator');
+    this._deleteEle || this._creatDelegateElement();
     this._initCopy();
     this._initPaste();
   }
-  _initPaste(){
-    $(this._table._ele).on('paste', () => {
-      if (!selection.length) return;
 
-      var pasteText = '';
-      if (window.clipboardData && window.clipboardData.getData) { // IE  
-        pastedText = window.clipboardData.getData('Text');
-      } else {
-        pastedText = event.originalEvent.clipboardData.getData('Text');//e.clipboardData.getData('text/plain');  
-      }
-      console.log(pasteText);
-    });
+  dispose() {
+    $(this._table._ele).off('.ui-clipboard');
+    this._table = null;
   }
 
-  _initCopy() {
-    $(this._table._ele).on('copy', () => {
+  copySelect() {
+    this._copySelection()
+  }
+
+  _initPaste() {
+    $(this._table._ele).on('keydown.ui-clipboard', (e) => {
       if (!this._table.selection.length) return;
-      
-      let selection = this._table.selection
-        .sort((cell1, cell2) => (cell1.rowDataIndex > cell2.rowDataIndex ? 1 : -1))
-        .sort((cell1, cell2) => (cell1.cellDataIndex > cell2.cellDataIndex ? 1 : -1));
-      
-      let rowIndex = -1;
-      let pasteStr = [];
-      let rowStr = null;
-      selection.forEach(cell => {
-        if (rowIndex !== cell._row.rowIndex) {
-          rowIndex = cell._row.rowIndex;
-          if (rowStr) {
-            rowStr = [];
-          } else {
-            pasteStr.push(rowStr);
-          }
-        }
-        rowStr.push(cell.value);
+      if (!(e.keyCode == 86 && e.ctrlKey || e.keyCode == 86 && e.metaKey)) return;
+
+      let pastedText = this._getClipboardData();
+
+      console.log(pastedText);
+
+      let formatted = pastedText.split('\n').map(s => s.split('\t'));
+      if (!formatted.length || !formatted[0].length) return;
+
+      let selection = this._sortSelection(this._table.selection);
+      let cell = this._table.selection[0];
+
+      formatted.forEach((rowData, rowIndex) => {
+        rowData.forEach((cellData, cellIndex) => {
+          if (cell.rowDataIndex + rowIndex >= this._table.rows.length) return;
+          let _cell = this._table.rows[cell.rowDataIndex + rowIndex]
+            .cells[cell.cellDataIndex + cellIndex];
+          if (!_cell || !_cell.editable) return;
+          _cell.value = formatted[rowIndex][cellIndex];
+        });
       });
 
-      let result = pasteStr
-        .map(row => row.join('\t'))
-        .join('\n');
-      
-      console.log(result);;
-      
-      if (window.clipboardData && window.clipboardData.getData) { // IE  
-				window.clipboardData.setData('Text', result);
-			} else {
-				event.originalEvent.clipboardData.setData('Text', result);
-			}
-      
+      event.preventDefault();
+      event.stopPropagation();
     });
   }
+
+
+  _initCopy() {
+    $(this._table._ele).on('keydown.ui-clipboard', (e) => {
+      if (!(e.keyCode == 67 && e.ctrlKey || e.keyCode == 67 && e.metaKey)) return;
+      if (!this._table.selection.length) return;
+      this._copySelection();
+    });
+  }
+
+  _copySelection() {
+    let result = this._formatCopyContent(this._table.selection);
+    console.log(result);;
+
+    this._copyTextToClipboard(result);
+  }
+  
+
+  _formatCopyContent(selection) {
+    if (!selection || !selection.length) return;
+    selection = this._sortSelection(selection);
+
+    let rowIndex = selection[0].row.rowIndex;
+    let pasteStr = [];
+    let rowStr = [];
+    pasteStr.push(rowStr);
+    selection.forEach(cell => {
+      if (rowIndex !== cell.row.rowIndex) {
+        rowIndex = cell.row.rowIndex;
+        rowStr = [];
+        pasteStr.push(rowStr);
+      }
+      rowStr.push(cell.value);
+    });
+
+    return pasteStr
+      .map(row => row.join('\t'))
+      .join('\n');
+  }
+  
+  _sortSelection(selection) {
+    return selection
+      .sort((cell1, cell2) => {
+        if (cell1.rowDataIndex > cell2.rowDataIndex) return 1;
+        if (cell1.rowDataIndex < cell2.rowDataIndex) return -1;
+        if (cell1.cellDataIndex > cell2.cellDataIndex) return 1;
+        if (cell1.cellDataIndex < cell2.cellDataIndex) return -1;
+        return 0; // should never happen
+      });
+  }
+
+  _getClipboardData() {
+    this._deleteEle.select();
+    document.execCommand('paste');
+    return this._deleteEle.value;
+  }
+
+  _copyTextToClipboard(text) {
+    this._deleteEle.value = text;
+    this._deleteEle.select();
+    document.execCommand('copy');
+  }
+
+  _creatDelegateElement() {
+    let textArea = document.createElement("textarea");
+    textArea.id = '_clipboardDelegator';
+
+    // Place in top-left corner of screen regardless of scroll position.
+    textArea.style.position = 'fixed';
+    textArea.style.top = 0;
+    textArea.style.left = 0;
+
+    // Ensure it has a small width and height. Setting to 1px / 1em
+    // doesn't work as this gives a negative w/h on some browsers.
+    textArea.style.width = '2em';
+    textArea.style.height = '2em';
+
+    // We don't need padding, reducing the size if it does flash render.
+    textArea.style.padding = 0;
+
+    // Clean up any borders.
+    textArea.style.border = 'none';
+    textArea.style.outline = 'none';
+    textArea.style.boxShadow = 'none';
+
+    // Avoid flash of white box if rendered for any reason.
+    textArea.style.background = 'transparent';
+    document.body.appendChild(textArea);
+
+
+    this._deleteEle = textArea;
+  }
+
 }

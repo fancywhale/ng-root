@@ -23,6 +23,7 @@ export class UIDrag extends events.EventEmitter {
   init() {
     let _that = this;
     $(this._tableEle).on('mousedown.uidrag', 'td.react-cell', function () {
+      if (!this.__celldata.editable) return;
       _that._onMouseDown(this.__celldata);
     });
 
@@ -94,8 +95,6 @@ export class UIDrag extends events.EventEmitter {
     ];
 
     let changes = this._compareMatric(newSelectionMatric, this._selectionMatric);
-    console.log(this._startCell, this._endCell);
-    console.log(changes);
     
     changes.leavingMat.forEach(cellMat => {
       let cell = this._table.rows[cellMat[1]].cells[cellMat[0]];

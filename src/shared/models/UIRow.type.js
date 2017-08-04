@@ -143,7 +143,6 @@ export class UIRow extends events.EventEmitter {
     }
   }
 
-
   /**
    * remove row from ui, if reserved flag is false, then remove data as well
    * @param {boolean} reserved 
@@ -156,6 +155,8 @@ export class UIRow extends events.EventEmitter {
     this._cells.forEach(cell => {
       cell.dispose();
     });
+    this._del = true;
+    
     // raise del event;
     this.emit(ROW_REMOVED, this, index);
     this.dispose();
@@ -189,10 +190,14 @@ export class UIRow extends events.EventEmitter {
   }
 
   dispose() {
+    this.emit(ROW_DISPOSE);
+    this._cells.forEach(cell => cell.dispose.bind(cell));
     this.removeAllListeners();
+    this._table = null;
+    this._data = null;
+    this._cells = null;
     $(this._ele).remove();
     $(this._ele).find('*').off();
-    this.emit(ROW_DISPOSE);
   }
 
   _toggleHide() {

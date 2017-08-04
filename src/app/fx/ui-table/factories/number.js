@@ -68,11 +68,11 @@ export function createNumber(input) {
     window.changeflag = true;
   });
 
-  // ele.addEventListener('keydown', (e) => {
-  //   if (document.activeElement === e.target) {
-  //     e.stopPropagation();
-  //   }
-  // });
+  ele.addEventListener('keydown', (e) => {
+    if (document.activeElement === ele && ele.contentEditable === 'true') {
+      e.stopPropagation();
+    }
+  });
 
   ele.innerText = input.cell.value;
   calculationHook(input, ele);

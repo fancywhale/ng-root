@@ -32,7 +32,7 @@ export class UIEdit extends events.EventEmitter{
   }
 
   _onDoubleClick(cell) {
-    this._activateCell(cell);
+    this._activateCell(cell, true);
   }
   
   _onKeyDown(cell, e) {
@@ -83,6 +83,7 @@ export class UIEdit extends events.EventEmitter{
     let cellEle = cell.ele;
       
     cellEle.children[0].contentEditable = true;
+    
     cellEle.children[0].focus();
     document.execCommand('selectAll', false, null);
     

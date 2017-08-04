@@ -1,8 +1,9 @@
 .react-table {
   & > .react-row{
     & > .react-cell {
-      *{
-        user-select: none;
+      div, textarea, input, span, a {
+        overflow: hidden;
+        text-overflow:ellipsis;
       }
     }
   }

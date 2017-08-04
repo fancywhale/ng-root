@@ -45,7 +45,11 @@ export class UISelection extends events.EventEmitter {
       _that._onMouseDown(this.__celldata);
     });
 
-    $(this._tableEle).on('mousemove.uiselection', 'td.react-cell', function () {
+    $(this._tableEle).on('mouseenter.uiselection', 'td.react-cell', function () {
+      _that._onMousMove(this.__celldata);
+    });
+
+    $(this._tableEle).on('mouseleave.uiselection', 'td.react-cell', function () {
       _that._onMousMove(this.__celldata);
     });
 

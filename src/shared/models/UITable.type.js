@@ -124,7 +124,7 @@ export class UITable extends events.EventEmitter {
     }).join('');
     
     var startTime = Date.now();
-    let tableEle = $(`<tbody class="react-table">${rows}</tbody>`)[0];
+    let tableEle = $(`<tbody tabindex="1" class="react-table">${rows}</tbody>`)[0];
     this._ele = tableEle;
     this._$ele = $(this._ele);
 

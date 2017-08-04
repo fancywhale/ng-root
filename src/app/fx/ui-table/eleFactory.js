@@ -78,6 +78,7 @@ function createText() {
     contenteditable="false"
     react-ele
     paste-text
+    draggable="false"
     onchange="window.changeflag=true" style="width: 100%;"
     type="text"
     value="${escapeHtml(this.cell.value)}" 
@@ -99,6 +100,7 @@ function createDisable() {
 function createTextarea() {
   return `
     <div react-ele
+      draggable="false"
       ng-paste-text
       contenteditable="false" paste-text
       style="outline:none;position: relative;z-index: 1;margin: 3px;min-height:16px;white-space:normal;word-break:break-all;word-wrap:break-word; " 
@@ -149,6 +151,7 @@ function createNumber() {
     <div react-ele
       contenteditable="false"
       onblur="window.changeflag=true"
+      draggable="false"
       style="width: 100%; text-align: right;"
       type="text">${escapeHtml(this.cell.value)}</div>`;
 };

@@ -152,14 +152,14 @@ export class UIRow extends events.EventEmitter {
     if (!reserved) {
       this._table.rows.splice(index, 1);
     }
-    this._cells.forEach(cell => {
-      cell.dispose();
-    });
+    // this._cells.forEach(cell => {
+    //   cell.dispose();
+    // });
     this._del = true;
-    
+    this.hide = true;
     // raise del event;
     this.emit(ROW_REMOVED, this, index);
-    this.dispose();
+    // this.dispose();
   }
 
   addCell(cellData) {

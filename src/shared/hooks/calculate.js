@@ -1,10 +1,3 @@
-let rightMenuDiv = $(`
-  <div class="calculate-panel" 
-    style="z-index:10;text-align:center;min-width:80px;">
-      <a href="javascript:;">重新计算</a>
-  </div>
-`).appendTo('body').hide();
-
 let calculateDiv = $(`
   <div class="calculate-panel">
     <div class="calculate-desc"></div>
@@ -33,34 +26,6 @@ export function calculationHook(input, ele) {
 
   //判断是否是计算公式的单元格
   if (isCalculate(tab.table.columns, cell, tab.table.tbody.rows, rowIndex, colIndex, tab, tabs)) {
-
-    //获取计算公式及数值信息
-    var rightMenu = function (e) {
-      if (window.calculate_rightMenu) {
-        $(window.calculate_rightMenu).remove();
-        window.calculate_rightMenu = false;
-      }
-
-      rightMenuDiv
-        .css({ 'left': e.pageX +30, 'top': e.pageY - 80 })
-        .show()
-        .insertAfter(ele)
-        .find('a')
-        .off('.rightMenuDiv')
-        .on('click.rightMenuDiv',function () {
-          rightMenuDiv.hide();
-          window.calculate_rightMenu = false;
-          reCalculate(tab.table.columns, cell, tab.table.tbody.rows, rowIndex, colIndex, tab, tabs);
-        });
-      window.calculate_rightMenu = rightMenuDiv;
-      $(document).on('click', function (e) {
-        if ($(e.target).is(rightMenuDiv) || rightMenuDiv.has($(e.target)).length > 0) {
-          return;
-        }
-        rightMenuDiv.hide();
-        window.calculate_rightMenu = false;
-      });
-    }
     var flag = null;
     $(ele).mouseover(function (e) {
       flag = true;
@@ -89,20 +54,6 @@ export function calculationHook(input, ele) {
     }).mousemove(function (e) {
       if (calculateDiv) {
         calculateDivRender({ 'left': e.pageX + 30, 'top': e.pageY - 80 });
-      }
-    }).mousedown(function (e) {
-      if (3 == e.which) {
-        window.calculate_rightevent = true;
-        document.oncontextmenu = function () {
-          if (window.calculate_rightevent) {
-            window.calculate_rightevent = false;
-            return false;//对IE 中断 默认点击右键事件处理函数
-          } else {
-            //e.preventDefault();//对标准DOM 中断 默认点击右键事件处理函数
-            return true;
-          };
-        };
-        rightMenu(e);
       }
     });
 				

@@ -41,14 +41,6 @@ import { getNumber } from '../../services';
 
 export function createNumber(input) {
 
-
-  // input
-  //   .scope
-  //   .numberCellChange(input.tab, input.cell.colIndex);
-  // input
-  //   .scope
-  //   .numberInit(input.cell);
-  
   let ele = input.cell.ele.children[0];
   // ele.value = input.cell.value || 0;
 
@@ -75,6 +67,12 @@ export function createNumber(input) {
     input.scope.$apply();
     window.changeflag = true;
   });
+
+  // ele.addEventListener('keydown', (e) => {
+  //   if (document.activeElement === e.target) {
+  //     e.stopPropagation();
+  //   }
+  // });
 
   ele.innerText = input.cell.value;
   calculationHook(input, ele);

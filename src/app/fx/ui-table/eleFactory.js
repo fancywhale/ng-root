@@ -148,9 +148,8 @@ function createNumber() {
   return `
     <div react-ele
       contenteditable="false"
-      onchange="window.changeflag=true"
+      onblur="window.changeflag=true"
       style="width: 100%; text-align: right;"
-      onfocus="document.execCommand('selectAll', false, null);"
       type="text">${escapeHtml(this.cell.value)}</div>`;
 };
 

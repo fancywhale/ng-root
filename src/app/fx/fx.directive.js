@@ -140,13 +140,6 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       $('.ym-box').fadeOut(300);
     });
   });
-  $(document).mousedown(function (e) {
-    /*if(3 == e.which){
-      document.oncontextmenu=function(){
-        return false;//对IE 中断 默认点击右键事件处理函数
-      };
-    }*/
-  });
   $scope.numberInit = function (cell) {
     if (isNotNull(cell.value)) {
       cell.value = $filter('number')(cell.value.toString().replaceAll(',', ''), cell.decimal);

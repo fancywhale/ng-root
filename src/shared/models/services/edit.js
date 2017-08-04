@@ -15,10 +15,12 @@ export class UIEdit extends events.EventEmitter{
 
   init() {
     let _that = this;
-    $(this._table.ele).on('dblclick.uiedit', 'td.react-cell', function () {
+    $(this._table.ele).on('dblclick.uiedit', 'td.react-cell', function (e) {
       let cellEle = this;
       let cell = cellEle.__celldata;
       _that._onDoubleClick(cell);
+      e.stopPropagation();
+      e.preventDefault();
     });
     
     $(this._table.ele).on('keydown.uiedit', 'td.react-cell', function (e) {
@@ -82,6 +84,8 @@ export class UIEdit extends events.EventEmitter{
       
     cellEle.children[0].contentEditable = true;
     cellEle.children[0].focus();
+    document.execCommand('selectAll', false, null);
+    
     this.emit(EDIT_CELL_FOCUS, cell);
     $(cellEle.children[0])
       .off('blur.react-cell-edit')

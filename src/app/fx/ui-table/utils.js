@@ -65,7 +65,11 @@ export function bindFocus(ele, cell, scope) {
 export function bindBlur(cell, ele, tab, scope) {
   ele.addEventListener('blur', () => {
     cell.validate();
-    scope.exeFuncs(tab);
+    try {
+      scope.exeFuncs(tab);
+    } catch (e){
+      console.log('exe funcn error');
+    }
     scope.$apply();
   });
 }

@@ -1,3 +1,4 @@
+import { UISelection } from './selection';
 
 export class UIClipboard {
 
@@ -20,8 +21,13 @@ export class UIClipboard {
     this._table = null;
   }
 
-  copySelect() {
-    this._copySelection()
+  copySelection() {
+    this._copySelection();
+  }
+
+  pasteSelection() {
+    this._pasteSelection();
+    this._table.scope.$apply();
   }
 
   _initPaste() {
@@ -29,31 +35,13 @@ export class UIClipboard {
       if (!this._table.selection.length) return;
       if (!(e.keyCode == 86 && e.ctrlKey || e.keyCode == 86 && e.metaKey)) return;
 
-      let pastedText = this._getClipboardData();
-
-      console.log(pastedText);
-
-      let formatted = pastedText.split('\n').map(s => s.split('\t'));
-      if (!formatted.length || !formatted[0].length) return;
-
-      let selection = this._sortSelection(this._table.selection);
-      let cell = this._table.selection[0];
-
-      formatted.forEach((rowData, rowIndex) => {
-        rowData.forEach((cellData, cellIndex) => {
-          if (cell.rowDataIndex + rowIndex >= this._table.rows.length) return;
-          let _cell = this._table.rows[cell.rowDataIndex + rowIndex]
-            .cells[cell.cellDataIndex + cellIndex];
-          if (!_cell || !_cell.editable) return;
-          _cell.value = formatted[rowIndex][cellIndex];
-        });
-      });
-
+      this._pasteSelection();
+      this._table.scope.$apply();
+      
       event.preventDefault();
       event.stopPropagation();
     });
   }
-
 
   _initCopy() {
     $(this._table._ele).on('keydown.ui-clipboard', (e) => {
@@ -63,17 +51,37 @@ export class UIClipboard {
     });
   }
 
+  _pasteSelection() {
+    let pastedText = this._getClipboardData();
+
+    let formatted = pastedText.split('\n').map(s => s.split('\t'));
+    if (!formatted.length || !formatted[0].length) return;
+
+    let selection = this._sortSelections(this._table.selection);
+    let cell = this._table.selection[0];
+
+    formatted.forEach((rowData, rowIndex) => {
+      rowData.forEach((cellData, cellIndex) => {
+        if (cell.rowDataIndex + rowIndex >= this._table.rows.length) return;
+        let _cell = this._table.rows[cell.rowDataIndex + rowIndex]
+          .cells[cell.cellDataIndex + cellIndex];
+        if (!_cell || !_cell.editable) return;
+        _cell.value = formatted[rowIndex][cellIndex];
+      });
+    });
+
+  }
+
   _copySelection() {
     let result = this._formatCopyContent(this._table.selection);
     console.log(result);;
 
     this._copyTextToClipboard(result);
   }
-  
 
   _formatCopyContent(selection) {
     if (!selection || !selection.length) return;
-    selection = this._sortSelection(selection);
+    selection = this._sortSelections(selection);
 
     let rowIndex = selection[0].row.rowIndex;
     let pasteStr = [];
@@ -93,15 +101,8 @@ export class UIClipboard {
       .join('\n');
   }
   
-  _sortSelection(selection) {
-    return selection
-      .sort((cell1, cell2) => {
-        if (cell1.rowDataIndex > cell2.rowDataIndex) return 1;
-        if (cell1.rowDataIndex < cell2.rowDataIndex) return -1;
-        if (cell1.cellDataIndex > cell2.cellDataIndex) return 1;
-        if (cell1.cellDataIndex < cell2.cellDataIndex) return -1;
-        return 0; // should never happen
-      });
+  _sortSelections(selection) {
+    return UISelection.sortSelections(selection);
   }
 
   _getClipboardData() {
@@ -141,7 +142,6 @@ export class UIClipboard {
     // Avoid flash of white box if rendered for any reason.
     textArea.style.background = 'transparent';
     document.body.appendChild(textArea);
-
 
     this._deleteEle = textArea;
   }

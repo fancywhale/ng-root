@@ -64,7 +64,11 @@ export function createNumber(input) {
   
   ele.addEventListener('blur', () => {
     input.cell.value = ele.innerText;
-    input.scope.exeFuncs(input.tab, input.cell, input.row.rowIndex, input.cell.colIndex);
+    try {
+      input.scope.exeFuncs(input.tab, input.cell, input.row.rowIndex, input.cell.colIndex);
+    } catch (e){
+      console.log('exe func error');
+    }
     input.cell.validate && input.cell.validate();
     input.scope.numberCellChange(input.tab, input.cell.colIndex);
     input.scope.sumRowRefresh(input.tab);

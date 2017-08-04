@@ -64,10 +64,12 @@ export class UIEdit extends events.EventEmitter{
       }
     } else if (this._activeCell !== cell && !e.ctrlKey && !e.metaKey) {
       if ((e.keyCode >= 48 && e.keyCode <= 57)
-      || (e.keyCode >= 96 && e.keyCode <= 105)
-      || (e.keyCode >= 65 && e.keyCode <= 90)
-      || (e.keyCode >= 186 && e.keyCode <= 192)
-        || (e.keyCode >= 219 && e.keyCode <= 222)) {
+        || (e.keyCode >= 96 && e.keyCode <= 105)
+        || (e.keyCode >= 65 && e.keyCode <= 90)
+        || (e.keyCode >= 186 && e.keyCode <= 192)
+        || (e.keyCode >= 219 && e.keyCode <= 222)
+        || e.keyCode === 8
+      ) {
         this._activateCell(cell);
       }
     }
@@ -129,7 +131,7 @@ export class UIEdit extends events.EventEmitter{
       .off('.uiedit')
       .find('td.react-cell')
       .off('.react-cell-edit');
-    
+    this.removeAllListeners();
     this._table = null;
   }
 }

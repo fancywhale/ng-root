@@ -1,6 +1,17 @@
 import * as events from 'events';
 
-export class UIDrag extends events.EventEmitter {
+export class UISelection extends events.EventEmitter {
+
+  static sortSelections(selections) {
+    return selections
+      .sort((cell1, cell2) => {
+        if (cell1.rowDataIndex > cell2.rowDataIndex) return 1;
+        if (cell1.rowDataIndex < cell2.rowDataIndex) return -1;
+        if (cell1.cellDataIndex > cell2.cellDataIndex) return 1;
+        if (cell1.cellDataIndex < cell2.cellDataIndex) return -1;
+        return 0; // should never happen
+      });
+  }
 
   get selection() {
     return this._selection;
@@ -22,32 +33,57 @@ export class UIDrag extends events.EventEmitter {
 
   init() {
     let _that = this;
-    $(this._tableEle).on('mousedown.uidrag', 'td.react-cell', function () {
+    $(this._tableEle).on('mousedown.uiselection', 'td.react-cell', function (e) {
       if (!this.__celldata.editable) return;
+
+      if (
+        (e.ctrlKey || e.which === 3 || e.button === 2)
+        && _that.selection.indexOf(this.__celldata) > -1
+      ) {
+        return;
+      }
       _that._onMouseDown(this.__celldata);
     });
 
-    $(this._tableEle).on('mousemove.uidrag', 'td.react-cell', function () {
+    $(this._tableEle).on('mousemove.uiselection', 'td.react-cell', function () {
       _that._onMousMove(this.__celldata);
     });
 
-    $(this._tableEle).on('mouseup.uidrag', 'td.react-cell', function (e) {
+    $(this._tableEle).on('mouseup.uiselection', 'td.react-cell', function (e) {
       _that._onMouseUp();
       e.preventDefault();
       e.stopPropagation();
     });
 
-    $('body').on('mouseup.uidrag', function () {
+    $('body').on('mouseup.uiselection', function () {
       _that._onMouseUp();
     });
 
-    $(document).on('dragleave.uidrag', function () {
+    $(document).on('dragleave.uiselection', function () {
       _that._onMouseUp();
     });
   }
 
+  removeSelection() {
+    let rowsToDel = this._table.selection
+      .reduce((rows, cell) => {
+        rows.indexOf(cell.row) === -1 && rows.push(cell.row);
+        return rows;
+      }, []);
+    rowsToDel.forEach(row => {
+      if (row.id) {
+        row.remove(true);
+      } else {
+        row.remove();
+      }
+    });
+
+    this._table.scope.$apply();
+  }
+
   dispose() {
-    $(this._table.ele).off('.uidrage');
+    this.removeAllListeners();
+    $(this._table.ele).off('.uiselection');
     this._table = null;
     this._tableEle = null;
   }

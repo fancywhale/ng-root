@@ -18,12 +18,6 @@ export const CELL_DISPOSE = 'CELL_DISPOSE';
 export const CELL_SELECTNAME_CHANGED = 'CELL_SELECTNAME_CHANGED';
 export const CELL_BUILD_DONE = 'CELL_BUILD_DONE';
 
-export const CONTEXT_NEW_UP = 'CONTEXT_NEW_UP';
-export const CONTEXT_NEW_DOWN = 'CONTEXT_NEW_DOWN';
-export const CONTEXT_DELETE = 'CONTEXT_DELETE';
-export const CONTEXT_COPY = 'CONTEXT_COPY';
-export const CONTEXT_PASTE = 'CONTEXT_PASTE';
-
 export class UICell extends events.EventEmitter {
 
   get cellDataIndex() {
@@ -158,6 +152,26 @@ export class UICell extends events.EventEmitter {
     return !this._hide;
   }
 
+  set invalide(value) {
+    if (value === this._invalide) return;
+    this._invalide = value;
+    this._setInvalide();
+  }
+
+  get invalide() {
+    return this._invalide;
+  }
+
+  get cellAbove() {
+    if (this.rowDataIndex === 0) return null;
+    return this._table.rows[this.rowDataIndex - 1].cells[this.cellDataIndex];
+  }
+
+  get cellBelow() {
+    if (this.rowDataIndex === this._table.rows.length - 1) return null;
+    return this._table.rows[this.rowDataIndex + 1].cells[this.cellDataIndex];
+  }
+
   constructor(obj = {}, row, cellEle) {
     super();
     // this._ele = document.createElement('td');
@@ -186,6 +200,7 @@ export class UICell extends events.EventEmitter {
     this._row = row;
     this._table = row.table;
     this._editable = false;
+    this._invalide = false;
   
     // not firing any event;
     Object.assign(this, obj);
@@ -234,33 +249,6 @@ export class UICell extends events.EventEmitter {
   }
 
   /**
-   * accpet cell's context-menu response
-   * @param {string} command 
-   */
-  triggerContext(command) {
-    switch (command) {
-      case CONTEXT_COPY:
-        $('[ng-paste-text]').trigger('copy');  
-        break;  
-      case CONTEXT_DELETE:
-        if (this._row.id) {
-          this._row.remove(true);
-        } else {
-          this._row.remove();
-        }
-        break;  
-      case CONTEXT_NEW_DOWN:
-        this._table;
-        break;  
-      case CONTEXT_NEW_UP:
-        break;  
-      case CONTEXT_PASTE:
-        $('[ng-paste-text]').trigger('paste');  
-        break;  
-    }
-  }
-
-  /**
    * update cell id
    */
   _updateID() {
@@ -296,6 +284,16 @@ export class UICell extends events.EventEmitter {
   _setAlign() {
     if (this._ele) {
       this._ele.style.textAlign = this.align;
+    }
+  }
+
+  _setInvalide() {
+    if (this._ele) {
+      if (this._invalide) {
+        this._ele.classList.add('invalide');
+      } else {
+        this._ele.classList.remove('invalide');
+      }
     }
   }
 

@@ -1,11 +1,14 @@
 import * as events from 'events';
 import { UIRow, ROW_REMOVED, ROW_DEL_CHANGE } from './UIRow.type';
 import {
-  UIDrag,
+  UISelection,
   UIClipboard,
   UIEdit,
+  UIContextMenu,
   EDIT_CELL_BLUR,
   EDIT_CELL_FOCUS,
+  CONTEXT_NEW_DOWN,
+  CONTEXT_NEW_UP,
 } from './services';
 
 export const ADD_ROW_EVENT = 'ADD_ROW_EVENT';
@@ -65,7 +68,7 @@ export class UITable extends events.EventEmitter {
   }
 
   get selection() {
-    return this._dragControl.selection;
+    return this._selectionControl.selection;
   }
 
   /**
@@ -80,7 +83,7 @@ export class UITable extends events.EventEmitter {
     this._uimodule = uimodule
     this._tabid = tab.id;
     this._rows = [];
-    this._dragControl = null;
+    this._selectionControl = null;
     this._clipboardControl = null;
     this._editControl = null;
 
@@ -88,6 +91,14 @@ export class UITable extends events.EventEmitter {
       this.rows = [];
       $(window).off();
     });
+  }
+
+  /**
+   * triggered after table is inited
+   * @protected
+   */
+  afterInit() {
+    
   }
 
   /**
@@ -117,15 +128,16 @@ export class UITable extends events.EventEmitter {
     this._ele = tableEle;
     this._$ele = $(this._ele);
 
-    this._dragControl = new UIDrag(this);
+    this._selectionControl = new UISelection(this);
     this._clipboardControl = new UIClipboard(this);
     this._editControl = new UIEdit(this);
+    this._contextMenuControl = new UIContextMenu(this);
 
     this._editControl.on(EDIT_CELL_BLUR, (cell) => {
     });
 
     this._editControl.on(EDIT_CELL_FOCUS, (cell) => {
-      this._dragControl.select(cell);
+      this._selectionControl.select(cell);
     });
     
     data.rows.forEach((rowData, index) => {
@@ -133,6 +145,8 @@ export class UITable extends events.EventEmitter {
       this._rows.push(row);
       this._initRow(row);
     });
+
+    this.afterInit();
   }
 
   addRow(rowData, position = this._rows.length) {
@@ -155,13 +169,19 @@ export class UITable extends events.EventEmitter {
     this._$ele.insertAfter($(ele).find('thead'));
   }
 
+  regroupCells() {
+    this._regroupCells();
+  }
+
   dispose() {
-    this._dragControl.dispose();
-    this._dragControl = null;
+    this._selectionControl.dispose();
+    this._selectionControl = null;
     this._clipboardControl.dispose();
     this._clipboardControl = null;
     this._editControl.dispose();
     this._editControl = null;
+    this._contextMenuControl.dispose();
+    this._contextMenuControl = null;
     this.removeAllListeners();
     this.rows.forEach(row => row.dispose.bind(row));
     this._$ele.find('*').off();
@@ -301,7 +321,7 @@ export class UITable extends events.EventEmitter {
         tab,
       };
       return `
-          <td class="react-cell" data-type="${cell.dataType}" tabindex="1">${this._factoryCellStr(payload)}</td>
+          <td class="react-cell" draggable="false" data-type="${cell.dataType}" tabindex="1">${this._factoryCellStr(payload)}</td>
         `;
     });
     return `<tr class="react-row">${cells.join('')}</tr>`;

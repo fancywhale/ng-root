@@ -225,15 +225,15 @@ angular.module('app.shared')
           element.unbind(onElementScroll);
           window.unbind(onWindowScroll);
 
-          clonePanel || clonePanel.remove();
-          clonePanelHead || clonePanelHead.remove();
-          orgHeader || orgHeader.remove();
-          panel || panel.remove();
-          headerTitle || headerTitle.remove();
-          scroll_header_title || scroll_header_title.remove();
-          scroll_header || scroll_header.remove();
-          scroll_fix_header || scroll_fix_header.remove();
-          floatTableHead || floatTableHead.remove();
+          clonePanel && clonePanel.remove();
+          clonePanelHead && clonePanelHead.remove();
+          orgHeader && orgHeader.remove();
+          panel && panel.remove();
+          headerTitle && headerTitle.remove();
+          scroll_header_title && scroll_header_title.remove();
+          scroll_header && scroll_header.remove();
+          scroll_fix_header && scroll_fix_header.remove();
+          floatTableHead && floatTableHead.remove();
 
           freezeColumnNum = null;
           columnsWidth = null;

@@ -36,7 +36,7 @@ export function createTab(input) {
       input.scope.$apply();
     });
   }
-  bindFontStyle(input.cell, ele);
+  // bindFontStyle(input.cell, ele);
   ele.innerText = input.row.data[input.cell.labelProperty];
   return ele;
 }

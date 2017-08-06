@@ -30,9 +30,10 @@ import {
  */
 
 export function bindFontStyle(cell, ele) {
-  cell.on(CELL_FONT_CHANGED, () => {
-    giveFontClass(cell, ele);
-  });
+  giveFontClass(cell, ele);
+  // cell.on(CELL_FONT_CHANGED, () => {
+  //   giveFontClass(cell, ele);
+  // });
 }
 
 export function bindID(tab, cell, row, ele, type) {
@@ -116,4 +117,12 @@ export function escapeHtml(value) {
   return String(value || '').replace(/[&<>"'`=\/]/g, function (s) {
     return entityMap[s];
   });
+}
+
+export function giveFontClassText(cell, isInClass=false) {
+  if (cell.font && cell.font.bold) {
+    return isInClass ? 'font-bold-row' : 'class="font-bold-row"';
+  } else {
+    return '';
+  }
 }

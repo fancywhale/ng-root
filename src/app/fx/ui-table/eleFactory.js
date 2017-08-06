@@ -1,4 +1,4 @@
-import { calTabIndex, escapeHtml, escapeStr } from './utils';
+import { calTabIndex, escapeHtml, escapeStr, giveFontClassText } from './utils';
 export const eleFactory = {
   checkbox: createCheckBox,
   select: createSelect,
@@ -27,6 +27,7 @@ function createSelect() {
   if (!this.cell.custom && !this.row.id) {
     return `
       <select react-ele
+        ${giveFontClassText(this.cell)}
         style="width: 100%;position: relative;z-index: 1;" 
         onchange="window.changeflag=true"/>
         ${this.cell.options.map(opt => `<option value="${opt.value}">${opt.name}</option>`)}
@@ -38,6 +39,7 @@ function createSelect() {
       value = _opt.name;
     }  
     return `<input react-ele
+      ${giveFontClassText(this.cell)}
       onchange="window.changeflag=true"
       value="${escapeHtml(value)}" 
       placeholder="请选择"
@@ -55,51 +57,52 @@ function createLabel() {
 
 function createHref() {
   if (cell.value) {
-    return '<a react-ele style="font-weight: bold;" target="_blank">${escapeHtml(this.cell.value)}</a>';
+    return '<a react-ele style="font-weight: bold;" target="_blank" ${giveFontClassText(this.cell)}>${escapeHtml(this.cell.value)}</a>';
   } else {
-    return `<span react-ele>${escapeHtml(this.cell.value)}</span>`;
+    return `<span react-ele ${giveFontClassText(this.cell)}>${escapeHtml(this.cell.value)}</span>`;
   }
 }
 
 function createTab() {
   if (this.cell.href != '' && this.cell.href != '/') {
-    return `<a react-ele href="javascript:;"style="font-weight: bold;" >${escapeHtml(this.cell.value)}</a>`;
+    return `<a react-ele href="javascript:;"style="font-weight: bold;" ${giveFontClassText(this.cell)} >${escapeHtml(this.cell.value)}</a>`;
   } else {
-    return `<span react-ele>${escapeHtml(this.cell.value)}</span>`;
+    return `<span react-ele ${giveFontClassText(this.cell)}>${escapeHtml(this.cell.value)}</span>`;
   }
 }
 
 function createFileView() {
-  return '<a react-ele href="javascript:;">预览</a>';
+  return '<a react-ele href="javascript:;" ${giveFontClassText(this.cell)}>预览</a>';
 }
 
 function createText() {
   return `<div 
+    ${giveFontClassText(this.cell)}
     contenteditable="false"
     react-ele
     paste-text
     draggable="false"
     onchange="window.changeflag=true" style="width: 100%;"
     type="text"
-    value="${escapeHtml(this.cell.value)}" 
-  ></div>`;
+  >${escapeHtml(this.cell.value)}</div>`;
 }
 
 function createDialog() {
   if (this.row.data && this.row.data[this.cell.dataSource]) {
     return `<a react-ele href="javascript:;" style="font-weight: bold;">${escapeHtml(this.cell.value)}</a>`;
   } else {
-    return `<span react-ele>${escapeHtml(this.cell.value)}</span>`;
+    return `<span react-ele ${giveFontClassText(this.cell)}>${escapeHtml(this.cell.value)}</span>`;
   }
 }
 
 function createDisable() {
-  return `<div react-ele><span>${this.cell.value ? escapeHtml(this.cell.value) : '---'}</span></div>`;
+  return `<div react-ele ${giveFontClassText(this.cell)}><span>${this.cell.value ? escapeHtml(this.cell.value) : '---'}</span></div>`;
 }
 
 function createTextarea() {
   return `
     <div react-ele
+      ${giveFontClassText(this.cell)}
       draggable="false"
       ng-paste-text
       contenteditable="false" paste-text
@@ -111,13 +114,13 @@ function createUpload() {
   if (this.row.id && this.cell.haveCjmbFlag && this.tab.id != '10101-1' && this.tab.id != '10101-2'
     && this.tab.id != '10101-3' && this.tab.id != '10201-1' && this.tab.id != '10201-2' && this.tab.id != '10201-3' && this.tab.id != '10201-3' && this.tab.id != '10301-1') {
     return `
-      <div react-ele>
+      <div react-ele ${giveFontClassText(this.cell)}>
         <a href="javascript:;" class="upload-ft">访谈</a> 
       </div>`;
               
   } else if (this.row.id && !this.cell.haveCjmbFlag) {
     return `
-      <div react-ele> 
+      <div react-ele ${giveFontClassText(this.cell)}> 
         <a href="javascript:;" class="upload-sc">上传</a>
         ${this.cell.value ? `<a href="javascript:;" class="upload-view">预览(${this.row.data.fjsl})</a> ` : ''}
         ${this.cell.value ? `<a href="javascript:;" class="upload-del">删除</a> ` : ''}
@@ -125,14 +128,14 @@ function createUpload() {
   } else if (this.row.id && this.cell.haveCjmbFlag && (this.tab.id == '10101-1' || this.tab.id == '10101-2'
     || this.tab.id == '10101-3' || this.tab.id == '10201-1' || this.tab.id == '10201-2' || this.tab.id == '10201-3' || this.tab.id == '10201-3' || this.tab.id == '10301-1')) {
     return `
-      <div react-ele> 
+      <div react-ele ${giveFontClassText(this.cell)}> 
         <a href="javascript:;" class="upload-sc">上传</a> 
         ${this.cell.value ? `<a href="javascript:;" class="upload-view">预览(${this.row.data.fjsl})</a> ` : ''}
         ${this.cell.value ? `<a href="javascript:;" class="upload-del">删除</a> ` : ''}
         <a target="_blank" class="upload-template">模板</a> 
       </div>`;
   } else if (!this.row.id) {
-    return '<div react-ele><a href="javascript:;" class="upload-save">保存</a></div>';
+    return `<div react-ele ${giveFontClassText(this.cell)}><a href="javascript:;" class="upload-save">保存</a></div>`;
   } else {
     return '';
   }
@@ -140,7 +143,7 @@ function createUpload() {
 
 function createFileSelect() {
   return `
-    <div react-ele> 
+    <div react-ele ${giveFontClassText(this.cell)}> 
       <a href="javascript:;">获取</a>
       ${this.cell.value ? `<a href="javascript:;">预览</a> ` : ''}
     </div>`
@@ -152,7 +155,8 @@ function createNumber() {
       contenteditable="false"
       onblur="window.changeflag=true"
       draggable="false"
-      style="width: 100%; text-align: right;"
+      ${giveFontClassText(this.cell)}
+      style="width: 100%; text-align: right; "
       type="text">${escapeHtml(this.cell.value)}</div>`;
 };
 
@@ -163,7 +167,7 @@ function createDateTime() {
     type="text"
     style="width: 100%;"
     value="${escapeStr(this.cell.value)}" 
-    class="l_member_date"
+    class="l_member_date ${giveFontClassText(this.cell, true)}"
   />`;
   ;
 }

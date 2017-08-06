@@ -39,6 +39,10 @@ export class UIRow extends events.EventEmitter {
   //   this.emit(ROW_DEL_CHANGE, value);
   // }
 
+  get ele() {
+    return this._ele;
+  }
+
   get hide() {
     return this._hide;
   }
@@ -71,6 +75,7 @@ export class UIRow extends events.EventEmitter {
     this.cells.forEach(cell => {
       cell.onRowIndexChange();
     });
+    this._updateID();
   }
 
   get table() {
@@ -205,7 +210,7 @@ export class UIRow extends events.EventEmitter {
       if (this._del || this._hide) {
         this._ele.style.display = 'none';
       } else {
-        this._ele.style.display = 'table-row';
+        this._ele.style.display = null;
       }
     }
     
@@ -222,6 +227,13 @@ export class UIRow extends events.EventEmitter {
 
   _beforeCellChanged(oldCells, newCelss) {
     oldCells.forEach(cell => cell.dispose.bind(cell));
+  }
+
+  /**
+   * update row id
+   */
+  _updateID() {
+    this._ele.id = ['tr', this._table.tabid, this._rowIndex].join('_');
   }
 
 }

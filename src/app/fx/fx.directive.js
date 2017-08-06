@@ -431,12 +431,6 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
             }
           }
           cjbg.cjmxs = cjmxs;
-          //					//验证表头
-          //					if(!checkIsNotEmptyDynamicHead(tab)){
-          //						alert('请先添加动态列信息');
-          //						invalide = true;
-          //					}
-          //把头也塞里
           if (!invalide && tab.table) {
             var title = [];
             angular.forEach(tab.table.thead.headRows, function (hr, headRowIndex) {
@@ -505,17 +499,6 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
           setPrompt('保存失败', false);
         });
       }
-      //			if($scope.checkedMSG!=null&&$scope.checkedMSG!=undefined&&$scope.checkedMSG!=''&&$scope.checkedMSG.length>0){
-      //				window.confirm('提示','有未通过校验的页面数据项，是否继续保存？',function(){
-      //					saveaction();
-      //				});
-      //			}else if(calculateErr||($scope.checkedMSG!=null&&$scope.checkedMSG!=undefined&&$scope.checkedMSG!=''&&$scope.checkedMSG.length>0)){
-      //				window.confirm('提示','页面数据项有计算不平，是否继续保存？',function(){
-      //					saveaction(); 
-      //				});
-      //			}else{
-      //				saveaction();
-      //			}
       saveaction();
     } else if ('switchEmptyRow' == button.action) {
       button.status = !button.status;
@@ -578,7 +561,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
         width: 400,
         template: 'app/fx/templates/editcol.html',
         className: 'ngdialog-theme-plain',
-        controller: function ($scope) {
+        controller:  ['$scope', ($scope)=> {
           $scope.description = editHeadDescription;
           $scope.editHeads = editHeads;
           $scope.del = function (index) {
@@ -591,20 +574,6 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
           }
           $scope.candel = function () {
             return true;
-            //			    		if($scope.editHeads.length==1){
-            //			    			return false;
-            //			    		}else{
-            //			    			var len=0;
-            //			    			angular.forEach($scope.editHeads,function(head){
-            //			    				if(!head.isdel){
-            //			    					len++
-            //			    				}
-            //			    			});
-            //			    			if(len==1){
-            //			    				return false;
-            //			    			}
-            //			    			return true;
-            //			    		}
           }
           $scope.checkRequired = function (head) {
             if (!head.value || (head.regexp && isNotNull(head.value)
@@ -740,7 +709,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
             }
             $scope.closeThisDialog(1);
           }
-        }
+        }]
       });
     } else if ('addFile' === button.action) {
       var tab = arguments[1];
@@ -749,7 +718,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
         width: 1100,
         template: 'app/fx/templates/file-select-dialog.html',
         className: 'ngdialog-theme-plain',
-        controller: function ($scope) {
+        controller:  ['$scope',($scope)=> {
           $scope.viewOneFile = function (fileuuid) {
             var url = "/ywpt/page/viewFILE.jsp?uuid=" + fileuuid;
             top.MainPage.closeTab("menu_ckwj");
@@ -848,7 +817,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
             });
             $scope.closeThisDialog(1);
           }
-        }
+        }]
       });
     } else if ('delFile' === button.action) {
       var tab = arguments[1];
@@ -891,50 +860,53 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
           width: 1100,
           template: 'app/fx/templates/load-file-dialog.html',
           className: 'ngdialog-theme-plain',
-          controller: function ($scope) {
-            $scope.files = files;
-            $scope.selectedFile = function (uuid) {
-              if (!$scope.seluuid || $scope.seluuid != uuid) {
-                $scope.seluuid = uuid;
+          controller: ['$scope' ,(dialogScop)=> {
+            dialogScop.files = files;
+            dialogScop.selectedFile = function (uuid) {
+              if (!dialogScop.seluuid || dialogScop.seluuid != uuid) {
+                dialogScop.seluuid = uuid;
               } else {
-                $scope.seluuid = false;
+                dialogScop.seluuid = false;
               }
             }
-            $scope.loadFile = function () {
+            dialogScop.loadFile = function () {
               window.showMask();
-              cwhbbbService.loadFile({ xmid: window.top.xmid, cjbddm: cjbddm, fileUuid: $scope.seluuid }, function (data) {
-                pageScope.fjuuid = $scope.seluuid;
-                //$scope.files = data;
-                var count = data.length;
-                var extend = new Array();
-                angular.forEach(data, function (d) {
-                  count--;
-                  angular.forEach(uimodule.tabs, function (tab) {
-                    if (tab.id == d.id) {
-                      fxService.setData($scope.uimodule, tab, d, $scope);
-                      window.changeflag = true;
-                      changflag = true;
-                      if (d.extend != null) {
-                        for (var extendIndex = 0; extendIndex < d.extend.checked.length; extendIndex++) {
-                          extend.push(d.extend.checked[extendIndex]);
+              cwhbbbService.loadFile({ xmid: window.top.xmid, cjbddm: cjbddm, fileUuid: dialogScop.seluuid }, function (data) {
+                try {
+                  pageScope.fjuuid = dialogScop.seluuid;
+                  //dialogScop.files = data;
+                  var count = data.length;
+                  var extend = new Array();
+                  data.forEach(d => {
+                    count--;
+                    uimodule.tabs.forEach(tab => {
+                      if (tab.id == d.id) {
+                        fxService.setData(uimodule, tab, d, $scope);
+                        window.changeflag = true;
+                        if (d.extend != null) {
+                          for (var extendIndex = 0; extendIndex < d.extend.checked.length; extendIndex++) {
+                            extend.push(d.extend.checked[extendIndex]);
+                          }
                         }
                       }
+                    });
+                    if (count == 0) {
+                      validetebgjjy(uimodule.tabs);
+                      dialogScop.checkedMSG = checkedField(uimodule.tabs, extend);
                     }
                   });
-                  if (count == 0) {
-                    validetebgjjy(uimodule.tabs);
-                    console.log(3334555);
-                    $scope.checkedMSG = checkedField(uimodule.tabs, extend);
-                  }
-                });
-                pageScope.checkedTime = '';
+                  pageScope.checkedTime = '';
+                } catch (e) {
+                  
+                }            
                 window.hideMask();
               }, function () {
                 setPrompt('加载文件数据失败', false);
+                window.hideMask();
               });
-              $scope.closeThisDialog(1);
+              dialogScop.closeThisDialog(1);
             }
-          }
+          }]
         });
       }
     } else if ('invalid' === button.action) {
@@ -992,7 +964,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       width: 1000,
       template: 'app/fx/templates/file-dialog.html',
       className: 'ngdialog-theme-plain',
-      controller: function ($scope) {
+      controller: ['$scope', ($scope) => {
         cwhbbbService.getFileList(param, function (data) {
           $scope.files = data;
         }, function () {
@@ -1025,11 +997,9 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
           }, function () {
             setPrompt('删除失败', false);
           });
-		    		
         }
-      }
+      }]
     });
-		
   }
   //拼链接方法
   $scope.getHref = function (href, params) {
@@ -1124,7 +1094,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       width: 800,
       template: 'app/fx/templates/textarea-dialog.html',
       className: 'ngdialog-theme-plain',
-      controller: function ($scope) {
+      controller: ['$scope', ($scope) => {
         //		    	$scope.shouldBeOpen = true;
         $scope.description = angular.copy(cell.value);
         $scope.save = function () {
@@ -1133,7 +1103,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
           cell.validate();
           $scope.closeThisDialog(1);
         }
-      }
+      }]
     });
   }
 	

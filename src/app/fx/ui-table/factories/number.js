@@ -52,6 +52,7 @@ export function createNumber(input) {
   });
   bindID(input.tab, input.cell, input.row, ele, 'number');
   bindFocus(ele, input.cell, input.scope);
+  // bindFontStyle(input.cell, ele);
   // bindTabIndex(input, ele);
   
   ele.addEventListener('blur', () => {
@@ -70,7 +71,15 @@ export function createNumber(input) {
 
   ele.addEventListener('keydown', (e) => {
     if (document.activeElement === ele && ele.contentEditable === 'true') {
-      e.stopPropagation();
+      if ((e.keyCode >= 48 && e.keyCode <= 57)
+        || (e.keyCode >= 96 && e.keyCode <= 105)
+        || (e.keyCode >= 65 && e.keyCode <= 90)
+        || (e.keyCode >= 186 && e.keyCode <= 192)
+        || (e.keyCode >= 219 && e.keyCode <= 222)
+        || e.keyCode === 8
+      ) {
+        e.stopPropagation();
+      }  
     }
   });
 

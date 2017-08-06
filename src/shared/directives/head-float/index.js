@@ -29,34 +29,80 @@ angular.module('app.shared')
         let floatTableHead = null;
         let floatTableHeadClone = null;
         let panelBody = null;
+        let tab = $scope.uitab.table.tbody;
+        let inited = false;
 
-        /**
-         * update size when resize
-         */
-        $(window).on('resize', $.debounce(() => {
-          getColWidth(true);
-          updateView();
-          updateElementView();
-        }, 300));
+        $scope.$watch('uitab.table.tbody', (value) => {
+          if (tab !== value) {
+            tab = value;
+            reload();
+          }
+        });
 
-        /**
-         * to init styles
-         */
-        $timeout(() => {
-          floatBarTop = floatBarTop || $("#float_bar_top");
-          orgHeader = orgHeader || $('#table_float_table_head_div_' + tabId);
-          panel = panel || $('#main_table_panel_' + tabId);
-          tabHead = tabHead || $('#tbhead_' + tabId);
-          panelHead = panelHead || $('#table_float_table_head_div_' + tabId);
-          headerTitle = headerTitle || $('#tbhead_' + tabId);
-          table = table || $("#main_table_" + tabId);
-        }, 1000);
+        function reload() {
+          // clear everything before reload
+
+          if (inited) {
+            destroy();
+  
+            columnsWidth = 0;
+            clonePanel = null;
+            clonePanelHead = null;
+            freezeWidth = null;
+            tabId = attrs.ngHeadFloat;
+            floatBarTop = null;
+            orgHeader = null;
+            panel = null;
+            domBody = $('body')[0];
+            tabHead = null;
+            table = null;
+            panelHead = null;
+            headerTitle = null;
+            scroll_header_title = null;
+            scroll_header = null;
+            scroll_fix_header = null;
+            floatTableHead = null;
+            floatTableHeadClone = null;
+            panelBody = null;
+
+            setTimeout(() => {
+              updateView();
+            }, 1000);
+          }
+          init();
+        }
+
+        function init() {
+          inited = true;
+          /**
+           * update size when resize
+           */
+          $(window).on('resize', $.debounce(() => {
+            getColWidth(true);
+            updateView();
+            updateElementView();
+          }, 300));
+
+          /**
+           * to init styles
+           */
+          $timeout(() => {
+            floatBarTop = floatBarTop || $("#float_bar_top");
+            orgHeader = orgHeader || $('#table_float_table_head_div_' + tabId);
+            panel = panel || $('#main_table_panel_' + tabId);
+            tabHead = tabHead || $('#tbhead_' + tabId);
+            panelHead = panelHead || $('#table_float_table_head_div_' + tabId);
+            headerTitle = headerTitle || $('#tbhead_' + tabId);
+            table = table || $("#main_table_" + tabId);
+          }, 1000);
         
-        /**
-         * bind events
-         */
-        element.scroll(onElementScroll);
-        $(window).scroll(onWindowScroll);
+          /**
+           * bind events
+           */
+          element.on('scroll.header-float', onElementScroll);
+          element.on('blur.header-float', '[contenteditable]', onWindowScroll);
+          $(window).on('scroll.header-float', onWindowScroll);
+        }
 
         /**
          * horizontal scroll
@@ -207,35 +253,32 @@ angular.module('app.shared')
          */
         function getColWidth(flag) {
           if (!table) return;
-          if (columnsWidth > 0 && !flag) return columnsWidth;
+          // larger than border width
+          if (columnsWidth > 2 && !flag) return columnsWidth;
           columnsWidth = 0;
-          var columnsNumber = 0;
-          table
-            .find("td:lt(" + freezeColumnNum + "), th:lt(" + freezeColumnNum + ")")
-            .each((index, ele) => {
-              if (columnsNumber++ >= 2) return;
-              columnsWidth += $(ele).outerWidth(true);
-            });
+
+          if (table[0] && table[0].tHead && table[0].tHead.rows[0] && table[0].tHead.rows[0].cells.length) {
+            let cells = table[0].tHead.rows[0].cells;
+            for (let i = 0; i < freezeColumnNum; i++){
+              columnsWidth += cells[i].getClientRects()[0].width;
+            }
+          }
           columnsWidth += 2;//显示边线
           console.log(columnsWidth);
           return columnsWidth;
         }
 
-        $scope.$on('$destroy', () => {
-          element.unbind(onElementScroll);
-          window.unbind(onWindowScroll);
+        function destroy() {
+          element.off('scroll.header-float', onElementScroll);
+          $(window).off('scroll.header-float', onWindowScroll);
+          element.off('blur.header-float', '[contenteditable]', onWindowScroll);
 
           clonePanel && clonePanel.remove();
           clonePanelHead && clonePanelHead.remove();
-          orgHeader && orgHeader.remove();
-          panel && panel.remove();
-          headerTitle && headerTitle.remove();
           scroll_header_title && scroll_header_title.remove();
           scroll_header && scroll_header.remove();
           scroll_fix_header && scroll_fix_header.remove();
-          floatTableHead && floatTableHead.remove();
 
-          freezeColumnNum = null;
           columnsWidth = null;
           clonePanel = null;
           clonePanelHead = null;
@@ -253,7 +296,9 @@ angular.module('app.shared')
           scroll_header = null;
           scroll_fix_header = null;
           floatTableHead = null;
-        });
+        }
+
+        $scope.$on('$destroy', destroy);
       }
     }
   }]);

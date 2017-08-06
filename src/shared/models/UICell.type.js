@@ -39,7 +39,7 @@ export class UICell extends events.EventEmitter {
   }
 
   get font() {
-    return this._colIndex;
+    return this._font;
   }
 
   set font(value) {

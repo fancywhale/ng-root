@@ -3,6 +3,7 @@ import {
   CONTEXT_NEW_DOWN,
   CONTEXT_NEW_UP,
   CONTEXT_RECALC,
+  ROW_HIDE_CHANGED,
 } from '../../../shared/models';
 import { eleFactory } from './eleFactory';
 import {
@@ -89,6 +90,26 @@ export class FXUITable extends UITable {
     this._contextMenuControl.on(CONTEXT_RECALC, (selections) => {
       this.recalc(selections);
     });
+
+    let clonedTable = null;
+    this.rows.forEach(r => {
+      r.on(ROW_HIDE_CHANGED, (hide) => {
+        if (!clonedTable) {
+          clonedTable = clonedTable || $(`#main_table_panel_body_copy_${this.tab.id}`)[0];
+          if (clonedTable) {
+            clonedTable = $(clonedTable).find('tbody')[0];
+          }
+        }
+        if (!clonedTable) return;
+        $(clonedTable).children(`#${r.ele.id}`)[0].style.display = hide ? 'none' : null;
+      });
+    });
+
+    // to resize float header
+    setTimeout(() => {
+      $(window).scroll();
+    }, 1);
+    
   }
 
   addRowAbove(selections) {
@@ -151,7 +172,11 @@ export class FXUITable extends UITable {
         this.tab,
         this.scope.uimodule.tabs
       )) {
-        reCalculate(this.columns, cell, this.rows, cell.rowDataIndex, cell.cellDataIndex, this.tab, this.scope.uimodule.tabs);
+        try {
+          reCalculate(this.columns, cell, this.rows, cell.rowDataIndex, cell.cellDataIndex, this.tab, this.scope.uimodule.tabs);
+        } catch (e){
+          console.log(e.message);
+        }
       }
     });
   }

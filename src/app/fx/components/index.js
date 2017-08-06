@@ -1,4 +1,3 @@
-import './function-menu';
 import './module-tabs';
 import './sub-table';
 import './table-date';

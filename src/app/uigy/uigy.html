@@ -3,42 +3,11 @@
   <input id="hidden_focus_hotKey" type="text" style="height:0px;size:0px" />
   <div class="qygxSearch" style="z-index:10;position:fixed" ng-init="initqygxSearch()"></div>
   <div ng-if="uimodule.toolbar.buttons">
-      <div class="new_function_menu" ng-if="!((uibutton.action=='ztpj'||uibutton.action=='xmjzfx')&&isIe())" ng-init="initDrag()">
-        <!-- ng-init="initDrag()" -->
-        <div class="function_menu_list">
-          <div ng-repeat="uibutton in uimodule.toolbar.buttons" class="menu_list" ng-if="!(uibutton.action=='ztpj'&&isIe())">
-            <div class="function_icon" ng-class="{'disabled':loading,'function_icon_bg2':'info'==uibutton.style,
-					'function_icon_bg1':'danger'==uibutton.style,'btn-primary':'primary'==uibutton.style,
-					'btn-default':'default'==uibutton.style,'btn-warning':'warning'==uibutton.style}" ng-hotkey="regHotKey(uibutton)" ng-mouseenter="ui.index = $index"
-              ng-mouseleave="ui.index = -1" ng-style="{'border-radius':$index==0?'10px 0px 0px 0px':'0px 0px 0px 0px'}">
-              <a ng-click="exeCommand(uibutton)"><i class="{{uibutton.icon}}"></i></a>
-            </div>
-            <a ng-if="$index==ui.index" ng-click="exeCommand(uibutton)" class="function_detail" ng-class="{'disabled':loading,'function_bg2':'info'==uibutton.style,
-					'function_bg1':'danger'==uibutton.style,'btn-primary':'primary'==uibutton.style,
-					'btn-default':'default'==uibutton.style,'btn-warning':'warning'==uibutton.style}" ng-href="{{uibutton.type=='linkbutton'?uibutton.href:'javascript:;'}}">{{uibutton.label}}<span ng-if="uibutton.hotKey">(<i ng-if="uibutton.hotKey.indexOf('CTRL\+')>=0" class="icon-angle-up"></i>{{uibutton.hotKey.replace('CTRL\+','')}})</span></a>
-          </div>
-        </div>
-        <div style="height:35px;">
-          <a ng-mouseenter="ui.index = -2" ng-mouseleave="ui.index = -1" class="function_menu_click_close function_click_icon" style="background: #c0c0c0;width:35px"
-            ng-click="slideToggle()">
-			        <i class="font-awesome-icon icon-removes"></i>
-				</a>
-          <a id="close" ng-if="ui.index == -2" class="function_detail" style="color:#fff;float:right;background: rgb(85, 92, 120);">收放</a>
-        </div>
-        <div style="height:35px;">
-          <a class="function_menu_click_move" style="width:35px;background: #c0c0c0;border-radius:0px 0px 0px 10px">
-				     <i class="font-awesome-icon icon-move"></i>
-				</a>
-        </div>
-        <!-- <iframe src="about:blank" frameBorder="0" marginHeight="0" allowtransparent="true" marginWidth="0" style="position:absolute; visibility:inherit; top:0px;left:0px;right:0px;bottom:0px;z-index:-1; filter:alpha(opacity=0);"></iframe> -->
-      </div>
-      <!-- <span id="prompt" style="color:#2e8965;float: left;max-width: 600px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;line-height: 31px;margin-left: 10px;font-size: 1.17em;">
-			{{uimodule.defaultPrompt}}
-		</span> -->
-      <div class="success_tips">
-        <span id="prompt">{{uimodule.defaultPrompt}}</span>
-        <i class="icon-remove success_tips_close" onclick="$(this).parent().hide(300)"></i>
-      </div>
+    <function-menu></function-menu>
+  </div>
+  <div class="success_tips">
+    <span id="prompt">{{uimodule.defaultPrompt}}</span>
+    <i class="icon-remove success_tips_close" onclick="$(this).parent().hide(300)"></i>
   </div>
   <div class="ljw_table_date" ng-if="uimodule.queryYearList" ng-init="uimodule.showYearList=false" ng-show="uimodule.showYearList">
     <div class="ljw_table_date_line">

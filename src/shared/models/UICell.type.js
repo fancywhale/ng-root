@@ -306,12 +306,22 @@ export class UICell extends events.EventEmitter {
   }
 
   _postBuild() {
-    this._table.compileCell(
-      this,
-      this._row,
-      this._colIndex,
-      this._row.rowIndex
-    );
+    if (this._table.eleFactories[this.dataType]) {
+      let func = this._table.eleFactories[this.dataType].compile;
+
+      let input = {
+        row: this._row,
+        cell: this,
+        tab: this._table._tab,
+        colIndex: this._colIndex,
+        rowIndex: this._row.rowIndex,
+        $dataTable: this._table,
+        scope: this._table.__scope,
+        tabIndex: this._table.tabIndex,
+      };
+      let content = func(input);
+    }
+    
     this._ele.__celldata = this;
   }
   

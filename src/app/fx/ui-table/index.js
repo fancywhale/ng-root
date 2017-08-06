@@ -1,1 +1,1 @@
-export * from './ui-table.type';
+export * from './UITable.type';

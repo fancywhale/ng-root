@@ -6,6 +6,7 @@ import {
   ROW_HIDE_CHANGED,
   TableFactory
 } from '../../../shared/models';
+import { FXUICell } from './UICell.type';
 
 import { newRow } from '../services';
 
@@ -14,7 +15,7 @@ import { newRow } from '../services';
  */
 @TableFactory({
   eleFactories: [],
-  cellFactory: ()=>{}
+  cellFactory: (data, row, cellEle) => new FXUICell(data, row, cellEle)
 })
 export class FXUITable extends UITable {
   /**

@@ -135,32 +135,6 @@ export class UITable extends events.EventEmitter {
   afterInit() {
     
   }
-
-  /**
-   * @abstract
-   * abstract method that need to be implemented in inheritance
-   * @param  {} cellData
-   * @param  {} row Data
-   * @param  {} colIndex
-   * @param  {} rowIndex
-   * @returns template
-   */
-  compileCell(cell, row, uitab, colIndex, rowIndex, tabIndex, scope) {
-    if (!this.eleFactories[cell.dataType]) return null;
-    var func = this.eleFactories[cell.dataType].compile;
-    var input = {
-      row: row,
-      cell: cell,
-      tab: this._tab,
-      colIndex: colIndex,
-      rowIndex: rowIndex,
-      $dataTable: this,
-      scope: this.__scope,
-      tabIndex: this.tabIndex,
-    };
-    var content = func(input);
-    return content;
-  }
   
   init(data, tab) {
     if (!data.rows instanceof Array) {

@@ -19,7 +19,7 @@ export function calculationHook(input, ele) {
   var row = input.row;
   var rowIndex = row.rowIndex;
   var tabs = input.scope.uimodule.tabs;
-  var colIndex = input.index;
+  var colIndex = input.colIndex;
   let loadedFlag = false;
   let contentCache = {};
   

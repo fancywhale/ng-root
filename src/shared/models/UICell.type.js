@@ -1,7 +1,5 @@
 import * as events from 'events';
 
-let colTrack = 0;
-
 export const CELL_COLINDEX_CHANGED = 'CELL_COLINDEX_CHANGED';
 export const CELL_COLSPAN_CHANGED = 'CELL_COLSPAN_CHANGED';
 export const CELL_ROWSPAN_CHANGED = 'CELL_ROWSPAN_CHANGED';
@@ -308,7 +306,7 @@ export class UICell extends events.EventEmitter {
   }
 
   _postBuild() {
-    this._table.cellFactory(
+    this._table.compileCell(
       this,
       this._row,
       this._colIndex,

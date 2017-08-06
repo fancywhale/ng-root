@@ -1,5 +1,7 @@
 import * as events from 'events';
+import { UICell } from './UICell.type';
 import { UIRow, ROW_REMOVED, ROW_DEL_CHANGE } from './UIRow.type';
+import { TableFactory } from './reflect';
 import {
   UISelection,
   UIClipboard,
@@ -11,6 +13,21 @@ import {
   CONTEXT_NEW_UP,
 } from './services';
 
+import {
+  UICheckBoxFactory,
+  UIDateTimeFactory,
+  UIDisableFactory,
+  UIFileSelectFactory,
+  UIHrefFactory,
+  UILabelFactory,
+  UINumberFactory,
+  UISelectFactory,
+  UITabFactory,
+  UITextareaFactory,
+  UITextFactory,
+  UIUploadFactory
+} from './factories';
+
 export const ADD_ROW_EVENT = 'ADD_ROW_EVENT';
 export const BEFORE_ROWS_CHANGED = 'BEFORE_ROWS_CHANGED';
 export const AFTER_ROWS_CHANGED = 'AFTER_ROWS_CHANGED';
@@ -19,13 +36,31 @@ export const AFTER_ROWS_CHANGED = 'AFTER_ROWS_CHANGED';
  * @abstract
  * abstract class
  */
+@TableFactory({
+  eleFactories: [
+    UICheckBoxFactory,
+    UIDateTimeFactory,
+    UIDisableFactory,
+    UIFileSelectFactory,
+    UIHrefFactory,
+    UILabelFactory,
+    UINumberFactory,
+    UISelectFactory,
+    UITabFactory,
+    UITextareaFactory,
+    UITextFactory,
+    UIUploadFactory
+  ],
+  cellFactory: (data, row, cellEle) => (new UICell(data, row, cellEle)),
+  rowFactory: (data, table, rowEle) => (new UIRow(data, table, rowEle)),
+})
 export class UITable extends events.EventEmitter {
 
   set rows(value) {
     if (!value instanceof Array) {
       throw new Error('input must be instance of Array');
     }
-    let newRows = value.map((rowData) => {return this._newRow(rowData)});
+    let newRows = value.map((rowData) => { return this._newRow(rowData) });
     let changes = this._findRowChange(this._rows, newRows);
 
     // raise rows before change event
@@ -110,7 +145,22 @@ export class UITable extends events.EventEmitter {
    * @param  {} rowIndex
    * @returns template
    */
-  cellFactory(cell, row, uitab, colIndex, rowIndex, tabIndex, scope) { }
+  compileCell(cell, row, uitab, colIndex, rowIndex, tabIndex, scope) {
+    if (!this.eleFactories[cell.dataType]) return null;
+    var func = this.eleFactories[cell.dataType].compile;
+    var input = {
+      row: row,
+      cell: cell,
+      tab: this._tab,
+      colIndex: colIndex,
+      rowIndex: rowIndex,
+      $dataTable: this,
+      scope: this.__scope,
+      tabIndex: this.tabIndex,
+    };
+    var content = func(input);
+    return content;
+  }
   
   init(data, tab) {
     if (!data.rows instanceof Array) {
@@ -141,7 +191,7 @@ export class UITable extends events.EventEmitter {
     });
     
     data.rows.forEach((rowData, index) => {
-      let row = new UIRow(rowData, this, tableEle.rows[index]);
+      let row = this.rowFactory(rowData, this, tableEle.rows[index]);
       this._rows.push(row);
       this._initRow(row);
     });
@@ -201,7 +251,7 @@ export class UITable extends events.EventEmitter {
   _addRow(row, index) {
     this._rows.splice(index, 0, row);
     row.on(ROW_REMOVED, (r, index) => {
-      for (let i = index; i < this._rows.length; i++){
+      for (let i = index; i < this._rows.length; i++) {
         this._rows[i].rowIndex = i;
       };
     });
@@ -216,10 +266,10 @@ export class UITable extends events.EventEmitter {
 
   _regroupCells() {
     let rows = this._rows;
-    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++){
+    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
       if ((rows[rowIndex].del || rows[rowIndex].hide)) continue;
       let row = rows[rowIndex];
-      for (let colIndex = 0; colIndex < row.cells.length; colIndex++){
+      for (let colIndex = 0; colIndex < row.cells.length; colIndex++) {
         let cell = row.cells[colIndex];
         if (!cell.group) continue;
         console.log(cell, cell.cellDataIndex, cell.rowDataIndex);
@@ -240,11 +290,11 @@ export class UITable extends events.EventEmitter {
   }
 
   _newRow(rowData, ele = this._factoryRowEle(rowData)) {
-    return new UIRow(rowData, this, ele);
+    return this.rowFactory(rowData, this, ele);
   }
 
   _createNewRows(newRows) {
-    for (let i = 0; i < newRows.length; i++){
+    for (let i = 0; i < newRows.length; i++) {
       let newRow = newRows[i];
       let flag = !this._rows.find(oldRow => {
         if (newRow.id) {
@@ -302,11 +352,19 @@ export class UITable extends events.EventEmitter {
   }
 
   /**
-   * @abstract
    * factory cell's html string
    * @param {{cell, row, tab}} payload 
    */
-  _factoryCellStr(payload) { }
+  _factoryCellStr(payload) {
+    let factory = this.eleFactories[payload.cell.dataType];
+    if (!factory) return '';
+    try {
+      return factory.createTemplate(payload);
+    } catch (e) {
+      console.log(e.message);
+      return '';
+    }
+  }
 
   /**
    * factory row html by given tab and row data
@@ -314,7 +372,7 @@ export class UITable extends events.EventEmitter {
    * @param {Object} row data
    */
   _factoryRowStr(tab, row) {
-    let cells =  row.cells.map(cell => {
+    let cells = row.cells.map(cell => {
       let payload = {
         cell,
         row,

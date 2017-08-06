@@ -12,14 +12,13 @@ export const ROW_CHECKED = 'ROW_CHECKED';
 export const ROW_HIDE_CHANGED = 'ROW_HIDE_CHANGED';
 export const ROW_DISPOSE = 'ROW_DISPOSE';
 
-
 export class UIRow extends events.EventEmitter {
 
   set cells(value) {
     if (!value instanceof Array) {
       throw new Error('cells should be instance of Array');
     }
-    const newCells = value.map(cellData => new UICell(cellData, this));
+    const newCells = value.map(cellData => this._table.cellFactory(cellData, this));
     this.emit(ROW_BEFORE_CELLS_CHANGED, this._cells, newCells);
     this._cells = newCells;
     this.emit(ROW_CELLS_CHANGED, this._cells);
@@ -142,7 +141,7 @@ export class UIRow extends events.EventEmitter {
     // add cells;
     if (this._data.cells) {
       this._data.cells.forEach((cellData, colIndex) => {
-        let cell = new UICell(cellData, this, this._ele.cells[colIndex]);
+        let cell = this._table.cellFactory(cellData, this, this._ele.cells[colIndex]);
         this._cells.push(cell);
       });
     }
@@ -167,13 +166,13 @@ export class UIRow extends events.EventEmitter {
     // this.dispose();
   }
 
-  addCell(cellData) {
-    let cell = new UICell(cellData, this);
-    this._cells.push(cell);
-    // raise cell add event;
+  // addCell(cellData) {
+  //   let cell = new UICell(cellData, this);
+  //   this._cells.push(cell);
+  //   // raise cell add event;
 
-    return cell;
-  }
+  //   return cell;
+  // }
 
   /**
    * append this tr element to tbody at given index

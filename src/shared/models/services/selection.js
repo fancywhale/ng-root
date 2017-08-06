@@ -81,6 +81,8 @@ export class UISelection extends events.EventEmitter {
         row.remove();
       }
     });
+    this._selection = [];
+    this._selectionMatric = null;
 
     this._table.scope.$apply();
   }

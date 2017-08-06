@@ -4,46 +4,18 @@ import {
   CONTEXT_NEW_UP,
   CONTEXT_RECALC,
   ROW_HIDE_CHANGED,
+  TableFactory
 } from '../../../shared/models';
-import { eleFactory } from './eleFactory';
-import {
-  createDateTime,
-  createCheckBox,
-  createDisable,
-  createFileSelect,
-  createHref,
-  createLabel,
-  createNumber,
-  createSelect,
-  createTab,
-  createText,
-  createTextarea,
-  createUpload,
-} from './factories';
 
-// 工厂函数库
-var factories = {
-  checkbox: createCheckBox,
-  select: createSelect,
-  label: createLabel,
-  href: createHref,
-  TAB: createTab,
-  text: createText,
-  disable: createDisable,
-  textarea: createTextarea,
-  upload: createUpload,
-  fileselect: createFileSelect,
-  number: createNumber,
-  datetime: createDateTime,
-  id: function () {
-    return null;
-  }
-};
 import { newRow } from '../services';
 
 /**
  * inheritance of UITable
  */
+@TableFactory({
+  eleFactories: [],
+  cellFactory: ()=>{}
+})
 export class FXUITable extends UITable {
   /**
    * factory table by given table data and tab id
@@ -55,29 +27,6 @@ export class FXUITable extends UITable {
     
     table.init(tableData);
     return table;
-  }
-
-  /**
-   * @param  {} cellData
-   * @param  {} row Data
-   * @param  {} colIndex
-   * @param  {} rowIndex
-   * @returns template
-   */
-  cellFactory(cell, row, colIndex, rowIndex) {
-    var func = factories[cell.dataType];
-    var input = {
-      row: row,
-      cell: cell,
-      tab: this._tab,
-      index: colIndex,
-      rowIndex: rowIndex,
-      $dataTable: this,
-      scope: this.__scope,
-      tabIndex: this.tabIndex,
-    };
-    var content = func(input);
-    return content;
   }
 
   afterInit() {
@@ -146,7 +95,7 @@ export class FXUITable extends UITable {
     if (!row.cells) throw new Error('no cell is created, there must be some internal error.');
     if (lastCell.cellBelow) {
       row.cells.forEach((cell, colIndex) => {
-        if (cell.group && 
+        if (cell.group &&
           currentBottomRow.cells[colIndex].value === currentBottomRow.cells[colIndex].cellBelow.value
         ) {
           cell.group = true;
@@ -174,20 +123,10 @@ export class FXUITable extends UITable {
       )) {
         try {
           reCalculate(this.columns, cell, this.rows, cell.rowDataIndex, cell.cellDataIndex, this.tab, this.scope.uimodule.tabs);
-        } catch (e){
+        } catch (e) {
           console.log(e.message);
         }
       }
     });
-  }
-  
-  /**
-   * @protected
-   * generate ele string
-   * @param {string} dataType 
-   */
-  _factoryCellStr(payload) { 
-    let func = eleFactory[payload.cell.dataType] || (() => '');
-    return func.apply(payload);
   }
 }

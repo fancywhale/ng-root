@@ -48,6 +48,7 @@ export class UIClipboard {
     $(this._table._ele).on('copy.ui-clipboard', (e) => {
       if (!this._table.selection.length) return;
       this._copySelection(e);
+	  return false;
     });
   }
 

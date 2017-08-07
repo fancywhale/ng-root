@@ -103,6 +103,7 @@ export class UIContextMenu extends events.EventEmitter {
         "sep1": "---------",
         [CONTEXT_COPY]: {
           name: "复制",
+          visible: () => document.queryCommandSupported('copy'),
           disabled: function () {
             let cell = this[0].__celldata;
             return !cell.editable;
@@ -110,6 +111,7 @@ export class UIContextMenu extends events.EventEmitter {
         },
         [CONTEXT_PASTE]: {
           name: "黏贴",
+          visible: () => document.queryCommandSupported('copy'),
           disabled: function () {
             let cell = this[0].__celldata;
             return !cell.editable;

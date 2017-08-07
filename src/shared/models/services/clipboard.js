@@ -10,9 +10,10 @@ export class UIClipboard {
   }
 
   init() {
-    if (!document.queryCommandSupported('copy')) return;
-    this._delegateEle = document.getElementById('_clipboardDelegator');
-    this._delegateEle || this._creatDelegateElement();
+    if (document.queryCommandSupported('copy')) {
+      this._delegateEle = document.getElementById('_clipboardDelegator');
+      this._delegateEle || this._creatDelegateElement();
+    }
     this._initCopy();
     this._initPaste();
   }
@@ -32,11 +33,10 @@ export class UIClipboard {
   }
 
   _initPaste() {
-    $(this._table._ele).on('keydown.ui-clipboard', (e) => {
+    $(this._table._ele).on('paste.ui-clipboard', (e) => {
       if (!this._table.selection.length) return;
-      if (!(e.keyCode == 86 && e.ctrlKey || e.keyCode == 86 && e.metaKey)) return;
 
-      this._pasteSelection();
+      this._pasteSelection(e);
       this._table.scope.$apply();
       
       event.preventDefault();
@@ -45,15 +45,14 @@ export class UIClipboard {
   }
 
   _initCopy() {
-    $(this._table._ele).on('keydown.ui-clipboard', (e) => {
-      if (!(e.keyCode == 67 && e.ctrlKey || e.keyCode == 67 && e.metaKey)) return;
+    $(this._table._ele).on('copy.ui-clipboard', (e) => {
       if (!this._table.selection.length) return;
-      this._copySelection();
+      this._copySelection(e);
     });
   }
 
-  _pasteSelection() {
-    let pastedText = this._getClipboardData();
+  _pasteSelection(e) {
+    let pastedText = this._getClipboardData(e);
 
     let formatted = pastedText.split('\n').map(s => s.split('\t'));
     if (!formatted.length || !formatted[0].length) return;
@@ -73,11 +72,11 @@ export class UIClipboard {
 
   }
 
-  _copySelection() {
+  _copySelection(e) {
     let result = this._formatCopyContent(this._table.selection);
     console.log(result);;
 
-    this._copyTextToClipboard(result);
+    this._copyTextToClipboard(result, e);
   }
 
   _formatCopyContent(selection) {
@@ -106,9 +105,13 @@ export class UIClipboard {
     return UISelection.sortSelections(selection);
   }
 
-  _getClipboardData() {
-    if (isIE()) {
-      return window.clipboardData.getData('Text');
+  _getClipboardData(event) {
+    if (!document.queryCommandSupported('copy')) {
+      if (isIE()) {
+        return window.clipboardData.getData('Text');
+      } else {
+        return event.originalEvent.clipboardData.getData('Text');
+      }
     } else {
       this._delegateEle.select();
       document.execCommand('paste');
@@ -116,9 +119,13 @@ export class UIClipboard {
     }
   }
 
-  _copyTextToClipboard(text) {
-    if (isIE()) {
-      window.clipboardData.setData('Text', text);
+  _copyTextToClipboard(text, event) {
+    if (!document.queryCommandSupported('copy')) {
+      if (isIE()) {
+        window.clipboardData.setData('Text', text);
+      } else {
+        event.originalEvent.clipboardData.setData('Text',copyText);
+      }
     } else {
       this._delegateEle.value = text;
       this._delegateEle.select();

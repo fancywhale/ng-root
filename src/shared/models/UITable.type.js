@@ -122,10 +122,10 @@ export class UITable extends events.EventEmitter {
     this._clipboardControl = null;
     this._editControl = null;
 
-    $(window).on('onload', function () {
-      this.rows = [];
-      $(window).off();
-    });
+    // $(window).on('onload', function () {
+    //   this.rows = [];
+    //   $(window).off();
+    // });
   }
 
   /**
@@ -136,6 +136,11 @@ export class UITable extends events.EventEmitter {
     
   }
   
+  /**
+   * init the table data
+   * @param {*} tbody data 
+   * @param {*} tab data
+   */
   init(data, tab) {
     if (!data.rows instanceof Array) {
       throw new Error('table rows should be instance of array.')
@@ -173,6 +178,11 @@ export class UITable extends events.EventEmitter {
     this.afterInit();
   }
 
+  /**
+   * 添加行
+   * @param {*} rowData 
+   * @param {*} position 
+   */
   addRow(rowData, position = this._rows.length) {
     let row = this._newRow(rowData);
     this._addRow(row, position);
@@ -181,22 +191,24 @@ export class UITable extends events.EventEmitter {
     return row;
   }
 
-  deleteRows() {
-    this._rows
-      .filter(row => row.checked)
-      .forEach(row => {
-        row.remove();
-      });
-  }
-
+  /**
+   * append rendered tbody to a table
+   * @param {HTMLTableElement} ele 
+   */
   append(ele) {
     this._$ele.insertAfter($(ele).find('thead'));
   }
 
+  /**
+   * regroup cells 
+   */
   regroupCells() {
     this._regroupCells();
   }
 
+  /**
+   * dispose the table and related events
+   */
   dispose() {
     this._selectionControl.dispose();
     this._selectionControl = null;

@@ -1,17 +1,18 @@
 import { UISelection } from './selection';
+import { isIE } from '../../utils';
 
 export class UIClipboard {
 
   constructor(table) {
     this._table = table;
-    this._deleteEle = null;
+    this._delegateEle = null;
     this.init();
   }
 
   init() {
     if (!document.queryCommandSupported('copy')) return;
-    this._deleteEle = document.getElementById('_clipboardDelegator');
-    this._deleteEle || this._creatDelegateElement();
+    this._delegateEle = document.getElementById('_clipboardDelegator');
+    this._delegateEle || this._creatDelegateElement();
     this._initCopy();
     this._initPaste();
   }
@@ -106,15 +107,23 @@ export class UIClipboard {
   }
 
   _getClipboardData() {
-    this._deleteEle.select();
-    document.execCommand('paste');
-    return this._deleteEle.value;
+    if (isIE()) {
+      return window.clipboardData.getData('Text');
+    } else {
+      this._delegateEle.select();
+      document.execCommand('paste');
+      return this._delegateEle.value;
+    }
   }
 
   _copyTextToClipboard(text) {
-    this._deleteEle.value = text;
-    this._deleteEle.select();
-    document.execCommand('copy');
+    if (isIE()) {
+      window.clipboardData.setData('Text', text);
+    } else {
+      this._delegateEle.value = text;
+      this._delegateEle.select();
+      document.execCommand('copy');
+    }
   }
 
   _creatDelegateElement() {
@@ -143,7 +152,7 @@ export class UIClipboard {
     textArea.style.background = 'transparent';
     document.body.appendChild(textArea);
 
-    this._deleteEle = textArea;
+    this._delegateEle = textArea;
   }
 
 }

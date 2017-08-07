@@ -105,14 +105,14 @@ export class UIContextMenu extends events.EventEmitter {
           name: "复制",
           disabled: function () {
             let cell = this[0].__celldata;
-            return !cell.editable || !document.queryCommandSupported('copy');
+            return !cell.editable;
           },
         },
         [CONTEXT_PASTE]: {
           name: "黏贴",
           disabled: function () {
             let cell = this[0].__celldata;
-            return !cell.editable || !document.queryCommandSupported('copy');
+            return !cell.editable;
           },
         },
         "sep2": "---------",

@@ -1,5 +1,5 @@
 import './uigy';
 import './fx';
 
-import './app';
+import './app.module';
 import './app.controller';

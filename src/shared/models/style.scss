@@ -4,6 +4,10 @@
       div, textarea, input, span, a {
         overflow: hidden;
         text-overflow:ellipsis;
+
+        &::selection{
+          background: transparent; 
+        }
       }
     }
   }

@@ -124,7 +124,7 @@ export class UIClipboard {
       if (isIE()) {
         window.clipboardData.setData('Text', text);
       } else {
-        event.originalEvent.clipboardData.setData('Text',copyText);
+        event.originalEvent.clipboardData.setData('Text',text);
       }
     } else {
       this._delegateEle.value = text;

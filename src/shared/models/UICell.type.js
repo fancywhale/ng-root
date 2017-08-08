@@ -1,4 +1,5 @@
 import * as events from 'events';
+import { isIE } from '../utils';
 
 export const CELL_COLINDEX_CHANGED = 'CELL_COLINDEX_CHANGED';
 export const CELL_COLSPAN_CHANGED = 'CELL_COLSPAN_CHANGED';
@@ -299,6 +300,9 @@ export class UICell extends events.EventEmitter {
    * init cell property
    */
   _init() {
+    if (!isIE()) {
+      this._ele.classList.add('unselectable');
+    }
     this._updateID();
     this._updateSpan();
     this._setAlign();

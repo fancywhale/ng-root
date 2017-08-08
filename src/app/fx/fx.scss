@@ -450,4 +450,12 @@
     cursor: pointer;
     color:#86a4c2;
   }
+
+  .btn-info.disabled, .btn-info, .btn-info:hover, .btn-info:focus {
+      background-color: #e5e5e5!important;
+      border-color: #e5e5e5;
+      font-family: Microsoft YaHei;
+      font-size: 14px;
+      color: #999999 !important;
+  }
 }

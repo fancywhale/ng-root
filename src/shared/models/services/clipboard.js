@@ -35,12 +35,13 @@ export class UIClipboard {
   _initPaste() {
     $(this._table._ele).on('paste.ui-clipboard', (e) => {
       if (!this._table.selection.length) return;
-
+	  
       this._pasteSelection(e);
       this._table.scope.$apply();
       
       event.preventDefault();
       event.stopPropagation();
+	  return false;
     });
   }
 
@@ -48,6 +49,7 @@ export class UIClipboard {
     $(this._table._ele).on('copy.ui-clipboard', (e) => {
       if (!this._table.selection.length) return;
       this._copySelection(e);
+	  return false;
     });
   }
 

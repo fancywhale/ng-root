@@ -202,13 +202,28 @@ export class UICell extends events.EventEmitter {
     this._invalide = false;
   
     // not firing any event;
-    Object.assign(this, obj);
+    Object.assign(this, obj, { _ele: cellEle });
 
     // this._row.on('ROW_INDEX_CHANGE', this._onRowIndexChange.bind(this));
     // this.on(CELL_HIDE_CHANGED, this._hideCell.bind(this));
 
     this._init();
 
+  }
+
+  append(index) {
+    let $row = $(this._row.ele);
+    let $cells = $row[0].cells
+    let $ele = $(this._ele);
+    if (!$cells.length) {
+      $row.prepend(this._ele);
+    } else {
+      if (index < $cells.length) {
+        $ele.insertBefore($cells[index]);
+      } else {
+        $ele.insertAfter($cells[$cells.length - 1]);
+      }
+    }
   }
 
   setValue(value) {

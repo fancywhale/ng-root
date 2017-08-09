@@ -129,23 +129,6 @@ export class UIRow extends events.EventEmitter {
     this._init();
   }
 
-  _init() {
-    // bind inner event listener
-    this.on(ROW_CELLS_CHANGED, this._cellsChanged.bind(this));
-    this.on(ROW_BEFORE_CELLS_CHANGED, this._beforeCellChanged.bind(this));
-
-    if (!this._$track) {
-      this._$track = rowTracker++;
-    }
-
-    // add cells;
-    if (this._data.cells) {
-      this._data.cells.forEach((cellData, colIndex) => {
-        let cell = this._table.cellFactory(cellData, this, this._ele.cells[colIndex]);
-        this._cells.push(cell);
-      });
-    }
-  }
 
   /**
    * remove row from ui, if reserved flag is false, then remove data as well
@@ -166,13 +149,30 @@ export class UIRow extends events.EventEmitter {
     // this.dispose();
   }
 
-  // addCell(cellData) {
-  //   let cell = new UICell(cellData, this);
-  //   this._cells.push(cell);
-  //   // raise cell add event;
+  addCell(cellData, colIndex = this.cells.length) {
+    let payload = {
+      cell: cellData,
+      row: this,
+      tab: this._table.tab,
+    };
+    let tmplt = `
+      <td class="react-cell" draggable="false" data-type="${cellData.dataType}" tabindex="1">
+        ${this._table._factoryCellStr(payload)}
+      </td>`;
+    let ele = $(tmplt)[0];
+    let cell = this._table.cellFactory(cellData, this, ele);
+    this._cells.splice(colIndex, 0, cell);
+    this._refreshCellsIndex();
+    cell.append(colIndex);
+    cell.postBuild();
 
-  //   return cell;
-  // }
+    return cell;
+  }
+
+  removeCell(cell) {
+    cell.dispose();
+    this._cells.splice(this._cells.indexOf(cell), 1);
+  }
 
   /**
    * append this tr element to tbody at given index
@@ -202,6 +202,30 @@ export class UIRow extends events.EventEmitter {
     this._cells = null;
     $(this._ele).remove();
     $(this._ele).find('*').off();
+  }
+
+  _refreshCellsIndex() {
+    this._cells.forEach((cell, colIndex) => {
+      cell.colIndex = colIndex;
+    });
+  }
+
+  _init() {
+    // bind inner event listener
+    this.on(ROW_CELLS_CHANGED, this._cellsChanged.bind(this));
+    this.on(ROW_BEFORE_CELLS_CHANGED, this._beforeCellChanged.bind(this));
+
+    if (!this._$track) {
+      this._$track = rowTracker++;
+    }
+
+    // add cells;
+    if (this._data.cells) {
+      this._data.cells.forEach((cellData, colIndex) => {
+        let cell = this._table.cellFactory(cellData, this, this._ele.cells[colIndex]);
+        this._cells.push(cell);
+      });
+    }
   }
 
   _toggleHide() {

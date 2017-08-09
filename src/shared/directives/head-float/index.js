@@ -163,27 +163,27 @@ angular.module('app.shared')
              * create everything when there is nothing.
              */
             if (!scroll_header_title) {
-              scroll_header_title = $($templateCache.get('app/fx/components/tab-head/tab-head.html'))
+              scroll_header_title = $($templateCache.get(attrs['scrollHeaderTitleId']))
                 .removeAttr('id')
                 .removeAttr('ng-if')
                 .removeAttr('ng-style');
               
               floatTableHead = $('#table_float_table_head_' + tabId);
-              floatTableHeadClone = floatTableHead
-                .clone()
+              floatTableHeadClone = $($templateCache.get(attrs['floatTableHeadId']))
                 .removeAttr('id')
                 .css({
                   'width': floatTableHead.width()
                 });
 
-              scroll_header = floatTableHead
-                .clone()
+              scroll_header = $($templateCache.get(attrs['floatTableHeadId']))
                 .attr('id', 'table_float_table_head_copy_' + tabId)//更改复制的表格id
                 .css({ zIndex: 2 });
               scroll_fix_header = scroll_fix_header || $('<div></div>');
               scroll_fix_header.append(floatTableHeadClone);
               
               $compile(scroll_header_title)($scope);
+              $compile(floatTableHeadClone)($scope);
+              $compile(scroll_header)($scope);
               
               element.after(scroll_header_title);
               element.after(scroll_header);

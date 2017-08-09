@@ -1,4 +1,4 @@
-import { bindFontStyle, bindID } from '../utils';
+import { bindFontStyle } from '../utils';
 import {
   UICell,
   CELL_DISPOSE,

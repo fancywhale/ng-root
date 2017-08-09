@@ -130,7 +130,8 @@ angular.module('fx')
       }
       if (tab.table && tab.table.tbody) {
         var startTime = new Date().getTime();
-      
+        tab.table.tbody.regroupRows();
+        tab.table.tbody.regroupCells();
         tab.table.tbody.append(`#main_table_${tab.id}`);
         console.log('table appending time: ', new Date().getTime() - startTime);
         

@@ -206,6 +206,10 @@ export class UITable extends events.EventEmitter {
     this._regroupCells();
   }
 
+  regroupRows() {
+    this._regroupRows();  
+  }
+
   /**
    * dispose the table and related events
    */
@@ -250,6 +254,9 @@ export class UITable extends events.EventEmitter {
     row.append(index);
   }
 
+  /**
+   * group cells if they are group cell and they have the same value
+   */
   _regroupCells() {
     let rows = this._rows;
     for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
@@ -272,7 +279,46 @@ export class UITable extends events.EventEmitter {
         if (rowIndex < rows.length) rowIndex--;
       }
     }
-    console.log(this);
+  }
+
+  /**
+   * group row by its group cell's value
+   */
+  _regroupRows() {
+    let rows = this._rows;
+    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+      if ((rows[rowIndex].del || rows[rowIndex].hide)) continue;
+      let row = rows[rowIndex];
+      for (let colIndex = 0; colIndex < row.cells.length; colIndex++) {
+        let cell = row.cells[colIndex];
+        if (!cell.group || (cell.cellBelow && cell.cellBelow.value == cell.value)) continue;
+        for (let nextRowIndex = rowIndex + 1; nextRowIndex < rows.length; nextRowIndex++) {
+          let nextRow = rows[nextRowIndex];
+          let nextCell = nextRow.cells[colIndex];
+          if (nextCell.value === cell.value) {
+            this._moveRow(nextRow, rowIndex + 1);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * move a row to given position
+   * @param {UIRow} row 
+   * @param {number} index 
+   */
+  _moveRow(row, index) {
+    this._rows.splice(this._rows.indexOf(row), 1);
+    this._rows.splice(index, 0, row);
+    row.append(index);
+    this._refreshRowIndex();
+  }
+
+  _refreshRowIndex() {
+    this._rows.forEach((row, rowIndex) => {
+      row.rowIndex = rowIndex;
+    });
   }
 
   _newRow(rowData, ele = this._factoryRowEle(rowData)) {

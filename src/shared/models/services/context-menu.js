@@ -7,6 +7,7 @@ export const CONTEXT_DELETE = 'CONTEXT_DELETE';
 export const CONTEXT_COPY = 'CONTEXT_COPY';
 export const CONTEXT_PASTE = 'CONTEXT_PASTE';
 export const CONTEXT_RECALC = 'CONTEXT_RECALC';
+export const CONTEXT_REGROUP = 'CONTEXT_REGROUP';
 
 export class UIContextMenu extends events.EventEmitter {
   constructor(table) {
@@ -50,6 +51,11 @@ export class UIContextMenu extends events.EventEmitter {
       case CONTEXT_PASTE:
         this._table._clipboardControl.pasteSelection();
         break;
+      case CONTEXT_REGROUP:
+        this._table.regroupRows();
+        this._table.regroupCells();
+        this._table._selectionControl.clear();
+        break;
     }
   }
 
@@ -80,6 +86,14 @@ export class UIContextMenu extends events.EventEmitter {
           }
         },
         "sep0": "---------",
+        [CONTEXT_REGROUP]: {
+          name: '整理表格',
+          visible: function () {
+            let cell = this[0].__celldata;
+            let row = cell.row;
+            return row.cells.find(cell => cell.group);
+          }
+        },
         [CONTEXT_NEW_UP]: {
           name: "插入上方行",
           disabled: function (key, opt) {
@@ -122,8 +136,7 @@ export class UIContextMenu extends events.EventEmitter {
           name: "删除行",
           disabled: function (key, opt) {
             let cell = this[0].__celldata;
-            return !(!cell.row.isLast
-              && cell._table._tab
+            return !(cell._table._tab
               && cell._table._tab.footerbar
               && cell._table._tab.footerbar.buttons
               && cell._table._tab.footerbar.buttons.find(button => button.action === 'delete'));
@@ -133,5 +146,4 @@ export class UIContextMenu extends events.EventEmitter {
     };
     $.contextMenu(options);
   }
-
 }

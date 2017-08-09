@@ -68,6 +68,14 @@ export class UISelection extends events.EventEmitter {
     });
   }
 
+  clear() {
+    this._selection.forEach(cell => {
+      this._deselect(cell);
+    });
+    this._selection = [];
+    this._selectionMatric = null;
+  }
+
   removeSelection() {
     let rowsToDel = this._table.selection
       .reduce((rows, cell) => {

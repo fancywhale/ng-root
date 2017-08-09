@@ -55,7 +55,7 @@ export class UISelection extends events.EventEmitter {
 
     $(this._tableEle).on('mouseup.uiselection', 'td.react-cell', function (e) {
       _that._onMouseUp();
-      e.preventDefault();
+      // e.preventDefault();
       e.stopPropagation();
     });
 

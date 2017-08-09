@@ -8,6 +8,13 @@
         &::selection{
           background: transparent; 
         }
+
+        &[contenteditable=true]{
+          &::selection{
+            background: lightblue;
+            color: #fff;
+          }
+        }
       }
     }
   }

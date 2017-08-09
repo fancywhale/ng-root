@@ -260,12 +260,12 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
         });
         if (scrollService.loadIndex == cjbgdmArr.length - 2) {
           validetebgjjy($scope.uimodule.tabs);
-          $('.new_function_menu').show();
+          //$('.new_function_menu').show();
           return;
         }
       }
 			
-      $('.new_function_menu').hide();
+      //$('.new_function_menu').hide();
       let param = { xmid: window.top.xmid, cjbddm: cjbddm, cjbgdms: cjbgdmArr.slice(0, 2) };
       $scope.loading++;
       cwhbbbService.loadData(param, loadHBData);

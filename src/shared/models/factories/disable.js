@@ -53,7 +53,8 @@ export class UIDisableFactory extends UIElementFactory {
    * create element template
    */
   createTemplate({cell}) {
-    return `<div react-ele ${giveFontClassText(cell)}><span>${cell.value ? escapeHtml(cell.value) : '---'}</span></div>`;
+    cell.value = '---';
+    return `<div react-ele ${giveFontClassText(cell)}><span>${cell.value}</span></div>`;
   }
 
   /**

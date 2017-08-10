@@ -125,7 +125,7 @@ export class FXUITable extends UITable {
         try {
           reCalculate(this.columns, cell, this.rows, cell.rowDataIndex, cell.cellDataIndex, this.tab, this.scope.uimodule.tabs);
         } catch (e) {
-          console.log(e.message);
+          //console.log(e.message);
         }
       }
     });

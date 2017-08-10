@@ -69,7 +69,7 @@ export function bindBlur(cell, ele, tab, scope) {
     try {
       scope.exeFuncs(tab);
     } catch (e){
-      console.log('exe funcn error');
+      //console.log('exe funcn error');
     }
     scope.$apply();
   });

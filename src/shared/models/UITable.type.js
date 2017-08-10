@@ -265,7 +265,7 @@ export class UITable extends events.EventEmitter {
       for (let colIndex = 0; colIndex < row.cells.length; colIndex++) {
         let cell = row.cells[colIndex];
         if (!cell.group || cell.value === '') continue;
-        console.log(cell, cell.cellDataIndex, cell.rowDataIndex);
+        //console.log(cell, cell.cellDataIndex, cell.rowDataIndex);
         cell.hide = false;
         cell.rowspan = 1;
         while (

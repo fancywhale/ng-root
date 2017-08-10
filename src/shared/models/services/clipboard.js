@@ -76,7 +76,7 @@ export class UIClipboard {
 
   _copySelection(e) {
     let result = this._formatCopyContent(this._table.selection);
-    console.log(result);;
+    //console.log(result);;
 
     this._copyTextToClipboard(result, e);
   }

@@ -102,7 +102,7 @@ angular.module('fx')
           tab.table.tbody = { rows: rows };
           var startTime = new Date().getTime();
           tab.table.tbody = FXUITable.factory(tab.table.tbody, scope, tab, uimodule);
-          console.log('table build time: ', new Date().getTime() - startTime);
+          //console.log('table build time: ', new Date().getTime() - startTime);
         }
       }
       if (tab.table && tab.table.filterProperty && tab.table.filters.length > 0) {
@@ -133,15 +133,15 @@ angular.module('fx')
         tab.table.tbody.regroupRows();
         tab.table.tbody.regroupCells();
         tab.table.tbody.append(`#main_table_${tab.id}`);
-        console.log('table appending time: ', new Date().getTime() - startTime);
+        //console.log('table appending time: ', new Date().getTime() - startTime);
         
         $timeout(() => {
           var startTime = new Date().getTime();
           renderTable(tab, tab.table.tbody, scope, uimodule);
-          console.log('table rendering time: ', new Date().getTime() - startTime);
+          //console.log('table rendering time: ', new Date().getTime() - startTime);
         });
       }
-      console.log('set data time:', Date.now() - setDataStart);
+      //console.log('set data time:', Date.now() - setDataStart);
     }
 
     function renderTable(uitab, tbody, scope, uimodule) {

@@ -1016,6 +1016,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
   }
   //作废当前属期
   $scope.deleteSqData = function (time) {
+    //debugger;
     var tab = null;
     if (isNotNull($scope.uimodule.tabs) && $scope.uimodule.tabs.length > 0) {
       tab = $scope.uimodule.tabs[0];
@@ -1055,7 +1056,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
     if (isNotNull($scope.uimodule) && $scope.uimodule.tabs && $scope.uimodule.tabs.length > 1) {
       height = height - 26;
     }
-    console.log(height);
+    //console.log(height);
     if (height < 400) {
       return 400;
     } else {
@@ -1149,7 +1150,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
   }
   var caniclickthemonth = false;
   var initYearMonthPicker = function () {
-    $('.ym-box>.year>.center').html($scope.uimodule.label.value ? $scope.uimodule.label.value.substring(0, 4) : new Date().getYear());
+    $('.ym-box>.year>.center').html($scope.uimodule.label.value ? $scope.uimodule.label.value.substring(0, 4) : new Date().getFullYear());
     $('.ym-box>.year>.left').click(function () {
       var year = $('.ym-box>.year>.center').html();
       $('.ym-box>.year>.center').html(parseInt(year) - 1);

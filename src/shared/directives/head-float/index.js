@@ -264,7 +264,7 @@ angular.module('app.shared')
             }
           }
           columnsWidth += 2;//显示边线
-          console.log(columnsWidth);
+          //console.log(columnsWidth);
           return columnsWidth;
         }
 

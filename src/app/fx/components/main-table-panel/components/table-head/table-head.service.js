@@ -119,8 +119,13 @@ angular.module('fx')
             cellIndex: order * bodyCount.count + bodyCount.begin + bodyCount.count + i,
             cell: Object.assign({}, cell),
           });
-          addColumns[addColumns.length - 1].cell.value = addColumns[addColumns.length - 1].cell.value == '---' ? '---' : '0.00';
-          addColumns[addColumns.length - 1].cell.colIndex = addColumns[addColumns.length - 1].cell.colIndex + bodyCount.count;
+          let curCell = addColumns[addColumns.length - 1].cell;
+          if(curCell.dataType == 'disable'){
+            curCell.value = '---';
+          }else{
+            curCell.value = curCell.value == '---' ? '---' : '0.00';
+          }
+          curCell.colIndex = cell.colIndex + bodyCount.count;
         }
       });
 		

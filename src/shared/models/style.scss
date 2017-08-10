@@ -1,6 +1,11 @@
 .react-table {
   & > .react-row{
     & > .react-cell {
+
+       &::selection{
+          background: transparent; 
+       }
+
       div, textarea, input, span, a {
         overflow: hidden;
         text-overflow:ellipsis;

@@ -20,7 +20,6 @@ function validateHbsAndBd(tabs) {
 function validateData(tabs, columns, rows) {
   if (isNotNull(rows) && rows.length > 0) {
     for (var i = 0; i < rows.length; i++) {
-      debugger;
       var xzbdyyEqualFlag = true;
       var row = rows[i];
       var snjezb = row.data.n[0];
@@ -269,7 +268,6 @@ function validateCellHbAndBd(uitab, colIndex, uirow, uicell) {
         uicell.equalsFlag = true;
       }
     } else if (colIndex == 11) {
-      debugger;
       if (cellValue != xzbdyyfx_bd) {
         uicell.equalsFlag = false;
       } else {

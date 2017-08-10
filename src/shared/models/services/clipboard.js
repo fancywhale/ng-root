@@ -49,7 +49,7 @@ export class UIClipboard {
     $(this._table._ele).on('copy.ui-clipboard', (e) => {
       if (!this._table.selection.length) return;
       this._copySelection(e);
-	  return false;
+      e.preventDefault();
     });
   }
 
@@ -115,6 +115,7 @@ export class UIClipboard {
         return event.originalEvent.clipboardData.getData('Text');
       }
     } else {
+      !this._delegateEle && this._creatDelegateElement();      
       this._delegateEle.select();
       document.execCommand('paste');
       return this._delegateEle.value;
@@ -129,6 +130,7 @@ export class UIClipboard {
         event.originalEvent.clipboardData.setData('Text',text);
       }
     } else {
+      !this._delegateEle && this._creatDelegateElement();
       this._delegateEle.value = text;
       this._delegateEle.select();
       document.execCommand('copy');

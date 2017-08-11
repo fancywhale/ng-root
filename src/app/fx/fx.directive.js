@@ -304,11 +304,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
   $scope.isIe = function () {
     return window.browser.versions.trident || window.browser.versions.webKit;
   }
-  $scope.editmoduleKeyup = function (id, edithead, editheads, $event) {
-    if (event.keyCode == 13) {
-      $scope.editmodleOff(id, edithead, editheads);
-    }
-  }
+
   //公共
   $scope.exeCommand = function (button) {
     if ('exit' === button.action) {

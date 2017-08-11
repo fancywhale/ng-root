@@ -22,10 +22,10 @@
             <a ng-click="delColumn(uiheadcell, uitab.table, $index);">删除该列</a>
           </li>
           <li>
-            <a ng-click="editColumn(uiheadcell, $index);">编辑列名</a>
+            <a ng-click="editColumn(uiheadcell,$event,$index);">编辑列名</a>
           </li>
         </ul>
-        <input id="{{uiheadcell.property+$index}}" ng-show="uiheadcell.dataType == 'text'&&uiheadcell.editmodle" ng-model="uiheadcell.value"
+        <input id="{{uiheadcell.property+$index}}" ng-if="uiheadcell.dataType == 'text'&&uiheadcell.editmodle" ng-model="uiheadcell.value"
           style="border: 1px solid #efefef; width: 90%; height: 90%;" 
           ng-focus="editModleOn(uiheadcell.property+$index, uiheadcell);"
           onchange="changeflag=true;window.changeflag=true;" 

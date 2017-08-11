@@ -46,6 +46,12 @@ angular.module('fx')
       }
     }
 
+    function editmoduleKeyup(id, edithead, editheads, $event){
+		 if (event.keyCode == 13){
+       editModleOff(id, edithead, editheads);
+		 }
+	  }
+
     function addColumn(addHead, table, headCellIndex) {
       let addHeadRows = [];
       //对表头与复杂表头计数
@@ -325,5 +331,6 @@ angular.module('fx')
       countDynamic,
       addColumn,
       delColumn,
+      editmoduleKeyup,
     };
   }]);

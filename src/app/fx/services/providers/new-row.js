@@ -5,10 +5,10 @@ import {
 
 export function newRow(tab) {
   //验证表头
-  if (!checkIsNotEmptyDynamicHead(tab)) {
-    setPrompt('请先添加动态列信息', false);
-    return;
-  }
+  // if (!checkIsNotEmptyDynamicHead(tab)) {
+  //   setPrompt('请先添加动态列信息', false);
+  //   return;
+  // }
   //判断动态列是否有值，没有提示
   var flag = true;
   var row = { rowIndex: tab.table.tbody.rows.length, cells: [], data: {} };

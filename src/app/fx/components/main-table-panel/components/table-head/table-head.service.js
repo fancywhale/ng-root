@@ -46,11 +46,11 @@ angular.module('fx')
       }
     }
 
-    function editmoduleKeyup(id, edithead, editheads, $event){
-		 if (event.keyCode == 13){
-       editModleOff(id, edithead, editheads);
-		 }
-	  }
+    function editmoduleKeyup(id, edithead, editheads, $event) {
+      if (event.keyCode == 13) {
+        editModleOff(id, edithead, editheads);
+      }
+    }
 
     function addColumn(addHead, table, headCellIndex) {
       let addHeadRows = [];
@@ -94,7 +94,7 @@ angular.module('fx')
           }
         }
       });
-		
+
       //表格计数
       let addColumns = [];
       let bodyCounts = [];
@@ -126,15 +126,15 @@ angular.module('fx')
             cell: Object.assign({}, cell),
           });
           let curCell = addColumns[addColumns.length - 1].cell;
-          if(curCell.dataType == 'disable'){
+          if (curCell.dataType == 'disable') {
             curCell.value = '---';
-          }else{
+          } else {
             curCell.value = curCell.value == '---' ? '---' : '0.00';
           }
           curCell.colIndex = cell.colIndex + bodyCount.count;
         }
       });
-		
+
       //粘贴单元格
       addHeadRows.forEach((headRow, index) => {
         let cell = headRow.cell;
@@ -156,7 +156,7 @@ angular.module('fx')
         //   table.tbody.rows[rowIndex].cells[i].colIndex = table.tbody.rows[rowIndex].cells[i].colIndex + 1;
         // }
       });
-		
+
       //处理合计行
       //合计行计数
       let sumCount = 0;
@@ -189,7 +189,7 @@ angular.module('fx')
           table.columns[i].colIndex = table.columns[i].colIndex + 1;
         }
       });
-	
+
       let count = headCounts[headCounts.length - 1].count;
       table.width = (table.width ? table.width : 1300) + count * 80;
     }
@@ -232,7 +232,7 @@ angular.module('fx')
           });
         }
       });
-		
+
       //表格计数
       let addColumns = [];
       let bodyCounts = [];
@@ -280,7 +280,7 @@ angular.module('fx')
         row.removeCell(row.cells[cellIndex]);
         // table.tbody.rows[rowIndex].cells.splice(cellIndex, 1);
       });
-		
+
       //处理合计行
 
       //合计行计数
@@ -309,11 +309,11 @@ angular.module('fx')
         let cellIndex = column.cellIndex;
         table.columns.splice(cellIndex, 1);
       });
-	
+
       let count = headCounts[headCounts.length - 1].count;
       table.width = (table.width ? table.width : 1300) - count * 80;
     }
-  
+
     function countDynamic(headCells) {
       let count = 0;
       headCells.forEach((head, index) => {
@@ -324,6 +324,45 @@ angular.module('fx')
       return count;
     }
 
+    function checkedAll(checkedProperty, uitab, checked) {
+      if (checkedProperty && uitab && uitab.table && uitab.table.tbody && uitab.table.tbody.rows && uitab.table.tbody.rows.length > 0) {
+        var propertys = angular.copy(checkedProperty);
+        if (propertys.indexOf('#ROW#') >= 0) {
+          $(uitab.table.tbody.rows).each(function (rowIndex, row) {
+            row.checked = checked;
+          });
+          propertys.splice(propertys.indexOf('#ROW#'), 1);
+        }
+        if (propertys.length > 0) {
+          $(uitab.table.tbody.rows).each(function (rowIndex, row) {
+            $(row.cells).each(function (cellIndex, cell) {
+              if (propertys.indexOf(cell.property) >= 0) {
+                cell.checked = checked;
+              }
+            });
+          });
+        }
+      }
+      if (checkedProperty && uitab && uitab.subTable && uitab.subTable.tbody && uitab.subTable.tbody.rows && uitab.subTable.tbody.rows.length > 0) {
+        var propertys = angular.copy(checkedProperty);
+        if (propertys.indexOf('#SUBROW#') >= 0) {
+          $(uitab.subTable.tbody.rows).each(function (rowIndex, row) {
+            row.checked = checked;
+          });
+          propertys.splice(propertys.indexOf('#SUBROW#'), 1);
+        }
+        if (propertys.length > 0) {
+          $(uitab.subTable.tbody.rows).each(function (rowIndex, row) {
+            $(row.cells).each(function (cellIndex, cell) {
+              if (propertys.indexOf(cell.property) >= 0) {
+                cell.checked = checked;
+              }
+            });
+          });
+        }
+      }
+    }
+
     return {
       editModleCache,
       editModleOn,
@@ -332,5 +371,6 @@ angular.module('fx')
       addColumn,
       delColumn,
       editmoduleKeyup,
+      checkedAll
     };
   }]);

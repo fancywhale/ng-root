@@ -65,6 +65,7 @@ export class Gulpfile {
       .bundle()
       .pipe(source('vendors.js'))
       .pipe(buffer())
+	  .pipe(uglify())
       .pipe(convertEncoding({to: 'utf8'}))      
       .pipe(gulp.dest(paths.dist));
   }

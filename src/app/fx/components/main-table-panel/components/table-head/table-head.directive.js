@@ -15,7 +15,7 @@ function fxTableHeadController($scope, fxTableHeadService) {
   
   $scope.editModleOn = (id, edithead) => {
     fxTableHeadService.editModleOn(id, edithead);
-    //window.setTimeout("$('#" + id + "').focus();", 50);
+    window.setTimeout("$('#" + id + "').focus();", 50);
   }
 
   $scope.editModleOff = (id, edithead, editheads) => {
@@ -24,7 +24,7 @@ function fxTableHeadController($scope, fxTableHeadService) {
 
   $scope.editColumn = function (uiheadcell,$event,index) {
     uiheadcell.editmodle = !uiheadcell.editmodle;
-    $event.target.parentNode.parentNode.parentNode.className = "ng-scope";
+   // $event.target.parentNode.parentNode.parentNode.className = "ng-scope";
     $scope.editModleOn(uiheadcell.property + index, uiheadcell);
   }
 
@@ -48,5 +48,13 @@ function fxTableHeadController($scope, fxTableHeadService) {
        $scope.editModleOff(id, edithead, editheads);
 		 }
   }
+
+  /**
+	 * 全选
+	 */
+	$scope.checkedAll = function(checkedProperty, uitab, checked){
+		fxTableHeadService.checkedAll(checkedProperty, uitab, checked);
+	}
+
 
 }

@@ -16,26 +16,26 @@
       <div class="sample-show-hide" ng-repeat="index in [0,1,2,3]" ng-show="activeTabIndex==index">
         <table ng-if="!tabs[index].loading" class="table table-striped table-new-border table-hover" width="100%">
           <tr>
-            <th style="width: 50px; text-align: center;">选择</th>
-            <th style="width: 70px; text-align: center;">资料分类</th>
-            <th style="width: 150px; text-align: center;">资料名称</th>
-            <th style="width: 150px; text-align: center;">文件名</th>
-            <th style="width: 80px; text-align: center;">来源</th>
-            <th style="width: 60px; text-align: center;">提交人</th>
-            <th style="width: 80px; text-align: center;">提交时间</th>
-            <th style="width: 150px; text-align: center;">文件描述</th>
-            <th style="width: 50px; text-align: center;">查看</th>
+            <th style="width:5%">选择</th>
+            <th style="width:8%">资料分类</th>
+            <th style="width:22%">资料名称</th>
+            <th style="width:12%">文件名</th>
+            <th style="width:9%">来源</th>
+            <th style="width:9%">提交人</th>
+            <th style="width:8%">提交时间</th>
+            <th style="width:22%">文件描述</th>
+            <th style="width:5%">预览</th>
           </tr>
           <tr ng-repeat="file in tabs[index].files" ng-click="file.checked=!file.checked">
             <td><input type="checkbox" ng-checked="file.checked"></td>
-            <td style="text-align:left" rowspan="{{file.rowspan1}}" ng-show="{{file.cjmxflmcShow}}">{{file.cjmxflmc}}</td>
-            <td style="text-align:left" rowspan="{{file.rowspan2}}" ng-show="{{file.cjmxmcShow}}">{{file.cjmxmc}}</td>
-            <td style="text-align:left">{{file.filetitle}}</td>
-            <td style="text-align:left">{{file.filesource}}</td>
-            <td style="text-align:left">{{file.wjtjr}}</td>
-            <td style="text-align:center">{{file.wjtjsj}}</td>
-            <td style="text-align:left">{{file.filecomment}}</td>
-            <td style="text-align:center"><a href="javascript:;" ng-click="viewOneFile(file.uuid)">查看</a></td>
+            <td rowspan="{{file.rowspan1}}" ng-show="{{file.cjmxflmcShow}}">{{file.cjmxflmc}}</td>
+            <td rowspan="{{file.rowspan2}}" ng-show="{{file.cjmxmcShow}}">{{file.cjmxmc}}</td>
+            <td>{{file.filetitle}}</td>
+            <td>{{file.filesource}}</td>
+            <td>{{file.wjtjr}}</td>
+            <td>{{file.wjtjsj}}</td>
+            <td>{{file.filecomment}}</td>
+            <td><a href="javascript:;" ng-click="viewOneFile(file.uuid)">查看</a></td>
           </tr>
         </table>
         <div class="spinner" style="margin: 50px auto;" ng-if="tabs[index].loading">

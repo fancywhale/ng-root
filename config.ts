@@ -1,4 +1,4 @@
-export const projectRoot = '../DDSS';
+export const projectRoot = '../jzdcproject';
 
 export const projectConfig = {
   externalLibs: [
@@ -14,8 +14,12 @@ export const projectConfig = {
     `${projectRoot}/webapp/css/js/moment-with-locales.js`,
     `${projectRoot}/webapp/css/js/nav.js`,
     `${projectRoot}/webapp/css/plugins/paste/pasteforcj.js`,
+    `${projectRoot}/webapp/css/plugins/rightMenu/rightMenu.js`,
   ],
   externalCss: [
+    `${projectRoot}/webapp/css/css/bootstrap.min.css`,
+    `${projectRoot}/webapp/css/plugins/angular/ngDialog.css`,
+    `${projectRoot}/webapp/css/plugins/angular/ngDialog-theme-plain.css`,    
     `${projectRoot}/webapp/css/css/style.css`,
     `${projectRoot}/webapp/css/css/css.min.css`,
     `${projectRoot}/webapp/css/css/css-rtl.min.css`,

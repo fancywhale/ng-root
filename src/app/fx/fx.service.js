@@ -5,6 +5,7 @@ angular.module('fx')
   .service('fxService', ['$timeout', '$filter', 'CellCompilePoolService', function ($timeout, $filter, CellCompilePoolService) {
     
     function setData(uimodule, tab, uidata, scope) {
+      //debugger;
       var setDataStart = Date.now();
       if (uidata.label) {
         uimodule.label.value = uidata.label;

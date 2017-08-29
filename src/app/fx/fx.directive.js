@@ -24,7 +24,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
   $scope.cjbddm = cjbddm;
   $scope.checkedMSG = new Array();
   $scope.loading = 0;
-  
+
   //初始化UI
   var initUI = function () {
     $scope.loadMsg = "界面初始化...";
@@ -38,17 +38,24 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       initData();
     });
   }
+
   //执行配置的自定义脚本中的方法
   $scope.exeFuncs = function (uitab, uicell, rowIndex, colIndex) {
-    window.changeflag = true;
-    if (uitab.funcs && uitab.funcs.length > 0) {
-      $(uitab.funcs).each(function (i, f) {
-        if (window[f]) {
-          window[f](uitab.table.columns, uitab.table.tbody.rows, uicell, rowIndex, colIndex, $scope.uimodule.tabs);
-        }
-      });
+    var result = uicell.validate(null, true);
+    if (!result.succ) {
+      setPrompt(result.propertyName + ' ' + result.msg.join(','), result.succ);
+    } else {
+      window.changeflag = true;
+      if (uitab.funcs && uitab.funcs.length > 0) {
+        $(uitab.funcs).each(function (i, f) {
+          if (window[f]) {
+            window[f](uitab.table.columns, uitab.table.tbody.rows, uicell, rowIndex, colIndex, $scope.uimodule.tabs);
+          }
+        });
+      }
     }
   }
+
   //执行配置的自定义脚本中的方法
   $scope.validetehbs = function (uitab) {
     //		if(uitab.id == "C0201-3" || uitab.id == "C0201-4" || uitab.id == "C0201-5"){
@@ -94,7 +101,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       }
     }
   }
-	
+
   //为销售结构分析用例的B0304-3-5的表格删除年份
   $scope.deleteYear = function (uitab, filter) {
     var table = uitab.table;
@@ -117,7 +124,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       }
     }
   }
-	
+
   //获得焦点事件
   $scope.inputFocus = function (cell) {
     if ($scope.uimodule.label && $scope.uimodule.label.dataType == 'datetime' && isNull($scope.uimodule.label.value)) {
@@ -125,13 +132,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       $('.ym-box').fadeIn(300);
     }
   }
-  //	$('#zlsqinput').on('click', function(e) {
-  //		e.stopPropagation();
-  //	});
   $(document).on('click', function (e) {
-    //		if ($(e.target).attr('id') == 'zlsqinput') {
-    //			return;
-    //		}
     var ids = ['addsqsrk', 'ymbox', 'ymbox_year', 'ymbox_year_sub', 'ymbox_year_center', 'ymbox_year_add', 'ymbox_month', 'zlsqinput'];
     if (ids.indexOf($(e.target).attr('id')) >= 0) {
       return;
@@ -165,7 +166,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
                 return;
               }
               if (value === tab.table.tbody.rows[rowIndex - step].cells[colIndex].value) {
-								
+
                 if (tab.table.tbody.rows[rowIndex - step].cells[colIndex].hide
                   || tab.table.tbody.rows[rowIndex - step].del == true
                   || tab.table.tbody.rows[rowIndex - step].hide == true) {
@@ -183,7 +184,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
     });
   }
   $scope.sumRowRefresh = function (uitab) {
-		
+
     if (uitab.table && uitab.table.sumRow) {
       $(uitab.table.columns).each(function (colIndex, col) {
         if (!col.sumCol) {
@@ -223,7 +224,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
   }
 
   //初始化数据
-  function initData () {
+  function initData() {
     $scope.loadMsg = "数据加载中...";
     //遍历tab，分别加载各自的table数据
     var count = $scope.uimodule.tabs.length;
@@ -241,10 +242,10 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
     var loadSize = 2;
     var totalSize = cjbgdmArr.length;
     if (totalSize > loadSize) {
-			
+
       var dataMap = new Map();
       let scrollService = new ScrollService(dataMap, cjbgdmArr);
-			
+
       var loadHBData = function (uidataList) {
         $scope.loading--;
         $.each(uidataList, function (index, uidata) {
@@ -264,7 +265,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
           return;
         }
       }
-			
+
       //$('.new_function_menu').hide();
       let param = { xmid: window.top.xmid, cjbddm: cjbddm, cjbgdms: cjbgdmArr.slice(0, 2) };
       $scope.loading++;
@@ -273,7 +274,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       $scope.$on('ngRepeatFinished', () => {
         scrollService.stopLoading();
       });
-        
+
       $(window).on('scroll', $.debounce(() => {
         if (scrollService.startLoading()) {
           let param = { xmid: window.top.xmid, cjbddm: cjbddm, cjbgdms: scrollService.bgdm };
@@ -285,7 +286,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
     }
   }
   initUI();
-	
+
   //初始化往期期限
   var initTimes = function () {
     var param = { xmid: window.top.xmid, bddm: cjbddm };
@@ -299,7 +300,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
     });
   }
   initTimes();
-  
+
   //判断是否ie
   $scope.isIe = function () {
     return window.browser.versions.trident || window.browser.versions.webKit;
@@ -335,7 +336,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
           param.jzrq = $scope.uimodule.label.value;
         }
       }
-			
+
       var invalide = false, calculateErr = false;
       angular.forEach($scope.uimodule.tabs, function (tab, tabIndex) {
         if (!invalide) {
@@ -347,6 +348,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
             angular.forEach(tab.table.tbody.rows, function (row) {
               var cjmx = { cjmxdm: row.id, isdel: row.del ? true : false };
               angular.forEach(row.cells, function (cell, cellIndex) {
+                //debugger;
                 if (invalide) {
                   $scope.uimodule.tabActiveIndex = tabIndex;
                 }
@@ -376,6 +378,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
                   }
                   if (cell.dynamic) {
                     if (cjmx[cell.dynamicGroup]) {
+
                       cjmx[cell.dynamicGroup][cell.colIndex] = {};
                       cjmx[cell.dynamicGroup][cell.colIndex][cell.property] = value;
                       if (cell.hbsEqualsFlag) {
@@ -413,7 +416,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
                     }
                   }
                 }
-									
+
               });
               cjmxs.push(cjmx);
             });
@@ -433,7 +436,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
               var hrv = [];
               angular.forEach(hr.headCells, function (cell) {
                 if (headRowIndex == 0) {
-                  if (!cell.value) {
+                  if (!cell.value && 'allcheckbox' != cell.dataType) {
                     invalide = true;
                     setPrompt(cell.propertyName + "不能为空", false);
                   } else if (cell.regexp && isNotNull(cell.value)
@@ -483,7 +486,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
           if (data.succ) {
             setPrompt('保存成功', true);
             window.changeflag = false;
-            initData();
+            //initData();
             initTimes();
             window.isRunningCommand = false;
           } else {
@@ -496,6 +499,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
         });
       }
       saveaction();
+      //$(window).unbind('scroll');
     } else if ('switchEmptyRow' == button.action) {
       button.status = !button.status;
       button.label = button.status ? button.labelOn : button.labelOff;
@@ -557,7 +561,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
         width: 400,
         template: 'app/fx/templates/editcol.html',
         className: 'ngdialog-theme-plain',
-        controller:  ['$scope', ($scope)=> {
+        controller: ['$scope', ($scope) => {
           $scope.description = editHeadDescription;
           $scope.editHeads = editHeads;
           $scope.del = function (index) {
@@ -566,7 +570,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
             } else {
               $scope.editHeads.splice(index, 1);
             }
-			    		
+
           }
           $scope.candel = function () {
             return true;
@@ -714,7 +718,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
         width: 1100,
         template: 'app/fx/templates/file-select-dialog.html',
         className: 'ngdialog-theme-plain',
-        controller:  ['$scope',($scope)=> {
+        controller: ['$scope', ($scope) => {
           $scope.viewOneFile = function (fileuuid) {
             var url = "/ywpt/page/viewFILE.jsp?uuid=" + fileuuid;
             top.MainPage.closeTab("menu_ckwj");
@@ -856,7 +860,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
           width: 1100,
           template: 'app/fx/templates/load-file-dialog.html',
           className: 'ngdialog-theme-plain',
-          controller: ['$scope' ,(dialogScop)=> {
+          controller: ['$scope', (dialogScop) => {
             dialogScop.files = files;
             dialogScop.selectedFile = function (uuid) {
               if (!dialogScop.seluuid || dialogScop.seluuid != uuid) {
@@ -893,9 +897,13 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
                   });
                   pageScope.checkedTime = '';
                 } catch (e) {
-                  
-                }            
+
+                }
                 window.hideMask();
+
+                //取消滚动事件
+                $(window).unbind('scroll');
+
               }, function () {
                 setPrompt('加载文件数据失败', false);
                 window.hideMask();
@@ -966,7 +974,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
         }, function () {
           setPrompt('加载附件列表失败', false);
         });
-		    	
+
         $scope.delFile = function () {
           var uuids = '';
           var count = 0;
@@ -1008,7 +1016,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
   }
   //文件获取
   $scope.fileSelect = function (cjmxdm) {
-		
+
   }
   //作废当前属期
   $scope.deleteSqData = function (time) {
@@ -1046,7 +1054,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       });
     }
   }
-	
+
   $scope.getPageOfficeHeight = function () {
     var height = $(window).height();
     if (isNotNull($scope.uimodule) && $scope.uimodule.tabs && $scope.uimodule.tabs.length > 1) {
@@ -1065,7 +1073,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       $scope.getPageOfficeHeight();
     });
   }
-	
+
   //div实现自动换行
   $scope.getTextareaDivText = function (value) {
     if (value) {
@@ -1074,7 +1082,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       return "";
     }
   }
-	
+
   //文本域编辑框
   $scope.editTextArea = function (cell) {
     if (cell.dataType !== 'textarea') {
@@ -1103,7 +1111,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       }]
     });
   }
-	
+
   $scope.slideToggle = function () {
     $(".function_click_icon").toggleClass("function_menu_click");
     $(".font-awesome-icon").toggleClass("icon-th-large").toggleClass("icon-remove");
@@ -1136,7 +1144,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       }
     });
   }
-  
+
   /**
    * 添加暑期
    */
@@ -1177,7 +1185,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
     caniclickthemonth = true;
     $('.ym-box').fadeIn(100);
   };
-	
+
   //公共
   $scope.loadZlsqData = function (time) {
     $scope.checkedTime = time;
@@ -1187,9 +1195,10 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
     var loadCount = $scope.uimodule.tabs.length;
     angular.forEach($scope.uimodule.tabs, function (tab) {
       if (tab.type == 'table') {
-        var param = { xmid: window.top.xmid, cjbddm: cjbddm, cjbgdm: tab.id, jzrq: $scope.checkedTime };
+        var param = { xmid: window.top.xmid, cjbddm: cjbddm, cjbgdms: tab.id, jzrq: $scope.checkedTime };
         cwhbbbService.loadData(param, function (uidata) {
-          fxService.setData($scope.uimodule, tab, uidata, $scope);
+          fxService.setData($scope.uimodule, tab, uidata[0], $scope);
+          //debugger;
           loadCount--;
           if (loadCount == 0) {
             if (time && $scope.times.indexOf(time) < 0) {
@@ -1214,7 +1223,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       }
     });
   }
-	
+
   $scope.saveZlsqData = function () {
     $('div[contenteditable="true"]').blur();
     var param = { xmid: window.top.xmid, cjbddm: $scope.cjbddm, fjuuid: $scope.fjuuid };
@@ -1416,7 +1425,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       setPrompt('保存失败', false);
     });
   }
-	
+
   /**
    * 添加属期
    */
@@ -1432,7 +1441,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       initYearMonthPicker();
     }
   }
-	
+
   $scope.selectedTime = function (time) {
     if ($scope.checkedTime != time) {
       if (window.changeflag) {
@@ -1447,7 +1456,7 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
       }
     }
   }
-	
+
   //当前表格有无选中行
   $scope.hasSelectedRow = function (tab) {
     if (tab && tab.table && tab.table.tbody && tab.table.tbody.rows) {
@@ -1493,4 +1502,9 @@ function cwhbbbFxController($timeout, $scope, cwhbbbService, swordHttp, ngDialog
     }
   }
 
+  $scope.initrightmenu = function () {
+    $("body").rightMenu({
+      isglcx: false
+    });
+  }
 }

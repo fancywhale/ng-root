@@ -35,6 +35,7 @@ export function getNumber(value, decimal) {
 
 //失去焦点校验
 export function cellvalidate(res) {
+  var isnull = arguments[1];
   var cell = this;
 
   if (cell.unit && cell.value) {
@@ -49,7 +50,7 @@ export function cellvalidate(res) {
       result.msg.push(msg);
     }
   }
-  if (cell.required && isNull(cell.value)) {
+  if (!isnull && cell.required && isNull(cell.value)) {
     addMsg('不能为空');
   }
   if (cell.minLength > 0 && (isNull(cell.value) || cell.value.toString().length < cell.minLength)) {

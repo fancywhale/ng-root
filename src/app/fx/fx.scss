@@ -422,11 +422,12 @@
   }
   .table-new-border tbody>tr>td{
     border-top:1px solid #efefef;
-    border-left:1px solid #efefef;
+    border-left:1px solid #efefef !important;
     height:30px;
     font-family:Microsoft YaHei;
     font-size:12px !important;
-    color:#232325
+    color:#232325;
+    text-align: left;
   }
   .table-new-border tbody>tr>th{
     border-top:1px solid #efefef;
@@ -434,7 +435,8 @@
     height:30px;
     font-family:Microsoft YaHei;
     font-size:12px !important;
-    color:#232325
+    color:#232325;
+    text-align: center;
   }
   .table-new-border{
     border-bottom:1px solid #efefef;

@@ -5,8 +5,8 @@
       <div class="function_icon" ng-class="{'function_icon_bg2':'info'==uibutton.style,
       'function_icon_bg1':'danger'==uibutton.style,'btn-primary':'primary'==uibutton.style,
       'btn-default':'default'==uibutton.style,'btn-warning':'warning'==uibutton.style}" ng-hotkey="regHotKey(uibutton)" ng-mouseenter="ui.index = $index"
-        ng-mouseleave="ui.index = -1" ng-style="{'border-radius':$index==0?'10px 0px 0px 0px':'0px 0px 0px 0px'}">
-        <a ng-click="exeCommand(uibutton)"><i class="{{uibutton.icon}}"></i></a>
+        ng-mouseleave="ui.index = -1" ng-click="exeCommand(uibutton)" ng-style="{'border-radius':$index==0?'10px 0px 0px 0px':'0px 0px 0px 0px'}">
+        <a><i class="{{uibutton.icon}}"></i></a>
       </div>
       <a ng-if="$index==ui.index" ng-click="exeCommand(uibutton)" class="function_detail" ng-class="{'function_bg2':'info'==uibutton.style,
       'function_bg1':'danger'==uibutton.style,'btn-primary':'primary'==uibutton.style,

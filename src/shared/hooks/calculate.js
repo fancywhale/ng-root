@@ -26,8 +26,13 @@ export function calculationHook(input, ele) {
 
   //判断是否是计算公式的单元格
   if (isCalculate(tab.table.columns, cell, tab.table.tbody.rows, rowIndex, colIndex, tab, tabs)) {
+    var postionTop = $(ele).offset().top - 7 ;
+    var postionRight = $(ele).offset().left + $(ele).width() - 4;
+    var fxIcon = $('<div class="cell_calculate"><img src="/resources/images/cw/fx1.png" width="10" height="10"></div>');
+    fxIcon.css({'position': "absolute",'top':postionTop,'left':postionRight,'cursor':'pointer'});
+    $(ele).after(fxIcon);
     var flag = null;
-    $(ele).mouseover(function (e) {
+    $(ele).nextAll('.cell_calculate').click(function (e) {
       flag = true;
       setTimeout(() => {
         if (!flag) return;
@@ -46,14 +51,11 @@ export function calculationHook(input, ele) {
           calculateDiv.fadeIn(300);
         }
       }, 300);
+      e.preventDefault();
     }).mouseout(function (e) {
       flag = false;
       if (calculateDiv) {
         calculateDiv.hide();
-      }
-    }).mousemove(function (e) {
-      if (calculateDiv) {
-        calculateDivRender({ 'left': e.pageX + 30, 'top': e.pageY - 80 });
       }
     });
 				

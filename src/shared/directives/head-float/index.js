@@ -169,13 +169,13 @@ angular.module('app.shared')
                 .removeAttr('ng-style');
               
               floatTableHead = $('#table_float_table_head_' + tabId);
-              floatTableHeadClone = $($templateCache.get(attrs['floatTableHeadId']))
+              floatTableHeadClone = $($templateCache.get(attrs['floatTableHead']))
                 .removeAttr('id')
                 .css({
                   'width': floatTableHead.width()
                 });
 
-              scroll_header = $($templateCache.get(attrs['floatTableHeadId']))
+              scroll_header = $($templateCache.get(attrs['floatTableHead']))
                 .attr('id', 'table_float_table_head_copy_' + tabId)//更改复制的表格id
                 .css({ zIndex: 2 });
               scroll_fix_header = scroll_fix_header || $('<div></div>');
@@ -230,8 +230,10 @@ angular.module('app.shared')
           if (!scroll_header_title) return;
           var orgHeaderWidth = orgHeader.width();
           var floatTopHeight = floatBarTop.height();
+          var tabHeadWidth = tabHead.width();
+          var tabHeadPaddingLeft = parseInt(tabHead.css('padding-left').replace('px', ''));
           floatTableHeadClone.width(floatTableHead.width());
-          scroll_header_title.css({ 'position': 'fixed', 'top': floatTopHeight, 'width': orgHeaderWidth, 'z-index': 3 });
+          scroll_header_title.css({ 'position': 'fixed', 'top': floatTopHeight, 'width': tabHeadWidth + tabHeadPaddingLeft, 'z-index': 3 });
           scroll_header.css({ 'position': 'fixed', 'top': floatTopHeight + headerTitle.height(), 'width': orgHeaderWidth, 'border-bottom': '1px solid #efefef' });
           scroll_fix_header.css({ 'position': 'fixed', 'top': floatTopHeight + headerTitle.height(), 'width': getColWidth(), 'overflow': 'hidden', 'z-index': 3 });
           var sl = Math.max(element.scrollLeft(), $(document).scrollLeft());
